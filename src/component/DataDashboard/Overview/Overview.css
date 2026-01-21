@@ -1,0 +1,181 @@
+.blue-row td{
+    background-color:#1f4a90;
+    color: white;
+    font-weight: bold;
+}
+
+.blue-row th{
+    background-color:#1f4a90;
+    color: white;
+    font-weight: bold;
+}
+
+.pink-row td{
+    background-color: #fbe5fd;
+    font-weight: bold;
+}
+
+.pink-row-sm td{
+    background-color: #fbe5fd;
+}
+
+td {
+    text-align: left;
+}
+
+/* Modern Overview Form Styling */
+
+/* Apply modern font stack globally to the form */
+.table {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Header rows with modern typography */
+.blue-row td {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  color: #1a1a1a;
+  padding: 16px 20px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* Section header rows */
+.pink-row td {
+  background-color: #fef3f2;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  color: #1a1a1a;
+  padding: 14px 20px;
+  border-top: 1px solid #fee2e2;
+}
+
+/* Sub-section rows */
+.pink-row-sm td {
+  background-color: #fef9f5;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  color: #374151;
+  padding: 12px 20px;
+}
+
+/* Regular table cells */
+.table tbody tr td {
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #374151;
+  letter-spacing: -0.01em;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+}
+
+/* Labels styling */
+.form-label {
+  font-size: 14px;
+  font-weight: 400;
+  color: #374151;
+  letter-spacing: -0.01em;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+/* Input fields with modern design */
+.form-control {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  letter-spacing: -0.01em;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background-color: #ffffff;
+}
+
+.form-control:hover:not(:focus) {
+  border-color: #d1d5db;
+}
+
+/* Calculated/readonly values */
+.table tbody tr td:last-child:not(:has(input)) {
+  font-weight: 500;
+  color: #1a1a1a;
+  font-size: 14px;
+}
+
+/* Table hover effect */
+.table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+/* Remove default table borders and add modern ones */
+.table-bordered {
+  border: 1px solid #e5e7eb;
+}
+
+.table-bordered td {
+  border-left: none;
+  border-right: none;
+}
+
+/* First and last cells get side borders */
+.table-bordered td:first-child {
+  border-left: 1px solid #e5e7eb;
+}
+
+.table-bordered td:last-child {
+  border-right: 1px solid #e5e7eb;
+}
+
+/* Responsive text sizing */
+@media (max-width: 768px) {
+  .blue-row td,
+  .pink-row td {
+    font-size: 13px;
+    padding: 12px 16px;
+  }
+  
+  .form-label,
+  .form-control,
+  .table tbody tr td {
+    font-size: 13px;
+    padding: 10px 16px;
+  }
+  
+  .form-control {
+    padding: 7px 10px;
+  }
+}
+
+/* Number input specific styling */
+input[type="text"].form-control {
+  text-align: left;
+}
+
+/* Placeholder styling */
+.form-control::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+/* Disabled state */
+.form-control:disabled {
+  background-color: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+  border-color: #e5e7eb;
+}

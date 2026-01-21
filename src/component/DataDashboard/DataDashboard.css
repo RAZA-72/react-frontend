@@ -1,0 +1,56 @@
+/* ===== MULTI STEP – ENTERPRISE STYLE ===== */
+
+.react-multi-step {
+  margin: 24px 0 36px;
+}
+
+/* Step labels */
+.react-multi-step li {
+  font-size: 13px;
+  font-weight: 500;
+  color: #9ca3af; /* muted */
+  letter-spacing: 0.2px;
+}
+
+/* Active step text */
+.react-multi-step li.active {
+  color: #111827;
+  font-weight: 600;
+}
+
+/* Step circles */
+.react-multi-step li::before {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  border: 2px solid #d1d5db;
+}
+
+/* Completed step */
+.react-multi-step li.done::before {
+  background: #22c55e;       /* subtle green */
+  border-color: #22c55e;
+}
+
+/* Active step circle */
+.react-multi-step li.active::before {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+/* Connecting line */
+.react-multi-step li::after {
+  height: 2px;
+  background: #e5e7eb;
+}
+
+/* Line till completed */
+.react-multi-step li.done::after {
+  background: #22c55e;
+}
+
+/* Line till active */
+.react-multi-step li.active::after {
+  background: #2563eb;
+}
