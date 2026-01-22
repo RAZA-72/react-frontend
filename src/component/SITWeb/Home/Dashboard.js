@@ -297,7 +297,7 @@ const Dashboard = () => {
     >
       {loadingMeeting ? "processing..." : (
         <>
-          Download All Meetings <i className="bi bi-download"></i>
+         <i className="bi bi-download"></i>
         </>
       )}
     </button>
