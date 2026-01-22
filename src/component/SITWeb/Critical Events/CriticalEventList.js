@@ -1394,6 +1394,21 @@ useEffect(() => {
     }
   };
 
+  const toProperCase = (text = "") => {
+  if (!text) return "All Months";
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+};
+
+const formatFY = (value = "") => {
+  if (!value) return "All Years";
+  return value.startsWith("fy-")
+    ? `FY ${value.split("-")[1]}`
+    : value;
+};
+
+const years = ["fy-23", "fy-24", "fy-25", "fy-26"];
+
+
   const handleBulkDelete = async () => {
     if (selectedRows.length === 0) return;
 
@@ -2414,11 +2429,13 @@ useEffect(() => {
                       label="Year"
                     >
                       <MenuItem value="">All Years</MenuItem>
+                     
                       {filterOptions.years.map((year) => (
-                        <MenuItem key={year} value={year}>
-                          {year}
-                        </MenuItem>
-                      ))}
+  <MenuItem key={year} value={year}>
+    {formatFY(year)}   {/* ✅ FIX */}
+  </MenuItem>
+))}
+
                     </Select>
                   </FormControl>
                 </Grid>
@@ -2433,11 +2450,12 @@ useEffect(() => {
                       label="Start Month"
                     >
                       <MenuItem value="">All Months</MenuItem>
-                      {filterOptions.months.map((month) => (
-                        <MenuItem key={month} value={month}>
-                          {month}
-                        </MenuItem>
-                      ))}
+                 {filterOptions.months.map((month) => (
+  <MenuItem key={month} value={month}>
+    {toProperCase(month)}   {/* ✅ FIX */}
+  </MenuItem>
+))}
+
                     </Select>
                   </FormControl>
                 </Grid>
@@ -2452,11 +2470,12 @@ useEffect(() => {
                       label="End Month"
                     >
                       <MenuItem value="">All Months</MenuItem>
-                      {filterOptions.months.map((month) => (
-                        <MenuItem key={month} value={month}>
-                          {month}
-                        </MenuItem>
-                      ))}
+                   {filterOptions.months.map((month) => (
+  <MenuItem key={month} value={month}>
+    {toProperCase(month)}   {/* ✅ FIX */}
+  </MenuItem>
+))}
+
                     </Select>
                   </FormControl>
                 </Grid>
