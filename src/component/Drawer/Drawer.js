@@ -115,6 +115,7 @@ import Rbi_add_data from "../ContactDetail/Rbi_add_data.js";
 import RbiEditData from "../ContactDetail/Rbi_edit_Data.js"
 
 import AnalyticsMaster from "../Analytics/AnalyticsMaster.js";
+import ModuleAnalyticsDetail from "../Analytics/anyalticsview/ModuleAnalyticsDetail.js"
 
 const drawerWidth = 250;
 
@@ -792,7 +793,9 @@ class MiniDrawer extends React.Component {
 
             <Route path="/rbi_data_list" element={<Rbi_Data_list />} />
             <Route path="/rbi_add_data" element={<Rbi_add_data />} />
-            <Route path="/updaterbidata/:id" element={<RbiEditData />} />
+            {/* <Route path="/updaterbidata/:id" element={<RbiEditData />} /> */}
+            <Route path="/updaterbidata" element={<RbiEditData />} />
+
 
             {/* route for sit */}
             <Route path="/sitdashboard/*" element={<Dashboard />} />
@@ -822,8 +825,10 @@ class MiniDrawer extends React.Component {
             <Route path="/update-meeting/:id" element={<UpdateMeeting />} />
             <Route path="/calendar" element={<Calendar />} />
 
+            <Route path="/ModuleAnalyticsDetail" element={<ModuleAnalyticsDetail />} />
 
-           <Route Path="/anylatics" element={<AnalyticsMaster />}/>
+
+            {/* <Route Path="/anylatics" element={<AnalyticsMaster />}/> */}
             {/* <Route exact path="/" element={<Home />} />
             <Route path="/micrometer" element={<Micrometer />} />
             <Route path="/micro-finance-universe" element={<MicrofinanceUniverse />} />

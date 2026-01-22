@@ -270,9 +270,11 @@ const Rbi = () => {
     }
   };
 
-  const handleEdit = (row) => {
-    navigate(`/updaterbidata/${row.id}`);
-  };
+const handleEdit = (row) => {
+  navigate(
+    `/updaterbidata?fy=${row.fy_year}&quarter=${row.quarter}`
+  );
+};
 
   // Delete Confirmation Dialog
   const openDeleteDialog = (id, record) => {

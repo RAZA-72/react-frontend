@@ -32,6 +32,7 @@ import PublicationList from "../ContactDetail/PublicationList";
 import Rbi_Data_list from "../ContactDetail/Rbi";
 import DataPublicationCard from "../ContactDetail/DataPublicationCard";
 import ComparisonModule from "../Home/ComparisonModule/ComparisonModule";
+import AnalyticsMaster from "../Analytics/AnalyticsMaster";
 
 export const RolePermissionList = [
   {
@@ -180,6 +181,13 @@ export const RolePermissionList = [
     checked: true,
     linkName: "/datadashboard",
     componentName: <PublicationList />,
+  },
+  {
+    key: "Analytics Module",
+    subkey: [],
+    checked: true,
+    linkName: "/anylatics",
+    componentName: <AnalyticsMaster />,
   },
 ];
 //export default RolePermissionList;

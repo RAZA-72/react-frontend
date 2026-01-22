@@ -151,7 +151,7 @@ const Home = () => {
       title: "Analytics Module",
       description:
         "An internal activity tracker for the State Initiative vertical.",
-      link: "/  ",
+      link: "/anylatics",
       icon: <i className="bi bi-bar-chart-fill"></i>,
       checked: true,
     },

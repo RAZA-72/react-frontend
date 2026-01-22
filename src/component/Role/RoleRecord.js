@@ -214,7 +214,7 @@ export const RolePermissionList = [
     linkName: "/rbi_data_list",
   },
 
-   {
+  {
     key: "Analytics Module",
     subkey: [],
     checked: true,
