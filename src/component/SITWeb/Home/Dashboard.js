@@ -261,51 +261,69 @@ const Dashboard = () => {
               <Grid container spacing={2}>
                 <Grid xs={12} sm={12} md={12}>
                   {/* Top Buttons */}
-                  <div className="row justify-content-end mt-0">
-                    <div className="col-sm-6">
-                      <div className="col-sm-6 mb-3">
-                        <button
-                          onClick={() => navigate(-1)}
-                          className="back-button"
-                          style={{
-                            background: "none",
-                            border: "none",
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            marginBottom: "1rem",
-                          }}
-                        >
-                          <ArrowBackIcon />
-                        </button>
-                      </div>
-                    </div>
+                 <div className="row justify-content-end mt-0">
+  <div className="col-sm-6">
+    <div className="col-sm-6 mb-3">
+      <button
+        onClick={() => navigate(-1)}
+        className="back-button creative-back"
+        style={{
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          marginBottom: "1rem",
+        }}
+      >
+        <ArrowBackIcon />
+      </button>
+    </div>
+  </div>
 
-                    <div className="col-sm-6 text-end button-group">
-                      <button
-                        type="button"
-                        className="css-1vhaqj4-MuiButtonBase-root-MuiButton-root w-auto m-0"
-                        onClick={() => navigate("/form-entry")}
-                      >
-                        Add Activity <i className="bi bi-plus"></i>
-                      </button>
+  <div className="col-sm-6 text-end button-group">
+    <button
+      type="button"
+      className="css-1vhaqj4-MuiButtonBase-root-MuiButton-root w-auto m-0 creative-btn"
+      onClick={() => navigate("/form-entry")}
+    >
+      Add Activity <i className="bi bi-plus"></i>
+    </button>
 
-                      <button
-                        type="button"
-                        className="css-1vhaqj4-MuiButtonBase-root-MuiButton-root w-auto m-0"
-                        onClick={handleDownloadMeeting}
-                      >
-                        {loadingMeeting ? (
-                          "processing..."
-                        ) : (
-                          <>
-                            Download All Meetings{" "}
-                            <i className="bi bi-download"></i>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
+    <button
+      type="button"
+      className="css-1vhaqj4-MuiButtonBase-root-MuiButton-root w-auto m-0 creative-btn"
+      onClick={handleDownloadMeeting}
+    >
+      {loadingMeeting ? "processing..." : (
+        <>
+          Download All Meetings <i className="bi bi-download"></i>
+        </>
+      )}
+    </button>
+
+    <a
+      href="SI-Tracker-Voice-Search-Release.apk"
+      download
+      className="css-1vhaqj4-MuiButtonBase-root-MuiButton-root w-auto m-0 px-2 creative-icon-btn text-decoration-none"
+      title="Download Android App"
+    >
+      <i className="bi bi-android fs-5"></i>
+    </a>
+
+    <button
+      type="button"
+      className="css-1vhaqj4-MuiButtonBase-root-MuiButton-root w-auto m-0 px-2 creative-icon-btn"
+      onClick={() =>
+        window.open("https://apps.apple.com/in/app/si-tracker/id6757100766")
+      }
+      title="Download iOS App"
+    >
+      <i className="bi bi-apple fs-5"></i>
+    </button>
+  </div>
+</div>
+
 
                   {/* Graphs */}
                   <div className="ag-format-container">
