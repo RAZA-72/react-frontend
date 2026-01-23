@@ -116,6 +116,7 @@ import RbiEditData from "../ContactDetail/Rbi_edit_Data.js"
 
 import AnalyticsMaster from "../Analytics/AnalyticsMaster.js";
 import ModuleAnalyticsDetail from "../Analytics/anyalticsview/ModuleAnalyticsDetail.js"
+import PageTracker from "../Analytics/tracking/PageTracker.js";
 
 const drawerWidth = 250;
 
@@ -681,6 +682,8 @@ class MiniDrawer extends React.Component {
           </List>
         </Drawer>
         <main className={classes.content}>
+            <PageTracker />
+
           <Routes>
             {res.map((val) => {
               return (
@@ -825,7 +828,7 @@ class MiniDrawer extends React.Component {
             <Route path="/update-meeting/:id" element={<UpdateMeeting />} />
             <Route path="/calendar" element={<Calendar />} />
 
-            <Route path="/ModuleAnalyticsDetail" element={<ModuleAnalyticsDetail />} />
+            <Route path="/ModuleAnalyticsDetail/:module" element={<ModuleAnalyticsDetail />} />
 
 
             {/* <Route Path="/anylatics" element={<AnalyticsMaster />}/> */}

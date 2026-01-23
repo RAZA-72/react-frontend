@@ -180,7 +180,24 @@ const Home = () => {
               {resCompareMenu.map((item) =>
                 item.match === true ? (
                   <div class="ag-courses_item">
-                    <Link to={item.link} class="ag-courses-item_link">
+<Link
+  to={item.link}
+  class="ag-courses-item_link"
+  onClick={() => {
+    // 👇 parent module yahin set hota hai
+    if (item.title === "SI Tracker") {
+      window.__ACTIVE_PARENT_MODULE__ = "sit";
+    } else if (item.title === "Microfinance Universe") {
+      window.__ACTIVE_PARENT_MODULE__ = "microfinance";
+    } else if (item.title === "Analytics Module") {
+      window.__ACTIVE_PARENT_MODULE__ = "analytics";
+    } else {
+      window.__ACTIVE_PARENT_MODULE__ = item.title
+        .toLowerCase()
+        .replace(/\s+/g, "_");
+    }
+  }}
+>
                       {/* <div class="ag-courses-item_bg"></div> */}
                       <h1>{item.icon}</h1>
                       <div class="ag-courses-item_title">

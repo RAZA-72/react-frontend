@@ -10,7 +10,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Unstable_Grid2";
 import GrassIcon from "@mui/icons-material/Grass";
-import { useState, useEffect } from "react";
+import { useState, useEffect ,useRef } from "react";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -390,6 +390,31 @@ const SroMaster = () => {
     selectedQuarter: "",
     isLoader: false,
   });
+const getSafeUserContext = () => {
+  try {
+    const raw = localStorage.getItem("user");
+    if (!raw) return {};
+
+    const parsed = JSON.parse(raw);
+
+    let user = null;
+    if (parsed.data && parsed.data.user) {
+      user = parsed.data.user;
+    } else if (parsed.user) {
+      user = parsed.user;
+    }
+
+    if (!user) return {};
+
+    return {
+      user_id: user.id || null,
+      email: user.email || null,
+      designation: user.designtion || null, // backend spelling
+    };
+  } catch (e) {
+    return {};
+  }
+};
 
 
   //sro 
@@ -439,6 +464,16 @@ const SroMaster = () => {
     useState("");
   const [ebUniqueEntity, setEbUniqueEntity] = useState("");
   const [ebentity, setEbEntity] = useState("");
+  const TAB_SUB_MODULE_MAP = {
+  "1": "credit_bureau",
+  "2": "employee_bureau",
+  "3": "qar",
+  "4": "cgrm",
+  "5": "rbi",
+  "6": "interest_rate",
+};
+const tabStartTimeRef = useRef(Date.now());
+const prevTabRef = useRef(value);
 
   const handleChange1 = (event, newValue) => {
     setValue(newValue);
@@ -955,6 +990,40 @@ const SroMaster = () => {
       setintretrateir(null);
     }
   };
+
+  useEffect(() => {
+  const now = Date.now();
+  const timeSpent = Math.floor((now - tabStartTimeRef.current) / 1000);
+
+  if (timeSpent > 0 && prevTabRef.current) {
+    const userCtx = getSafeUserContext();
+
+    const payload = {
+      user_id: userCtx.user_id,
+      email: userCtx.email,
+      designation: userCtx.designation,
+      page_url: window.location.pathname,
+      module: "sro",
+      sub_module: TAB_SUB_MODULE_MAP[prevTabRef.current] || "unknown",
+      time_spent_seconds: timeSpent,
+    };
+
+    // 🔥 sendBeacon alternative (old browser safe)
+    fetch("http://api.mfinindia.org/api/auth/track-page", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      keepalive: true,
+      body: JSON.stringify(payload),
+    });
+  }
+
+  // reset for new tab
+  tabStartTimeRef.current = Date.now();
+  prevTabRef.current = value;
+}, [value]);
+
 
   // const getGraph56Data = async () => {
   //   const shortName = filterofir.selectedShortName;
