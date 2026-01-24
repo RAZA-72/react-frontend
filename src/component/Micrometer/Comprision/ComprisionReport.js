@@ -98,6 +98,44 @@ function ComprisionReport() {
       console.log('error', error)
     })
   }
+const addOtherColumn = () => {
+  const table = document.getElementById("table-to-xls");
+  if (!table) return;
+
+  const rows = table.querySelectorAll("tr");
+  if (!rows.length) return;
+
+  // 🔍 Find "Self" column index from header row
+  let selfColIndex = -1;
+  const headerCells = rows[0].children;
+
+  for (let i = 0; i < headerCells.length; i++) {
+    if (headerCells[i].innerText.trim().toLowerCase() === "self") {
+      selfColIndex = i;
+      break;
+    }
+  }
+
+  if (selfColIndex === -1) return;
+
+  // 🔁 Clone Self column into Other
+  rows.forEach((row, rowIndex) => {
+    const cells = row.children;
+    const selfCell = cells[selfColIndex];
+
+    if (!selfCell) return;
+
+    const clonedCell = selfCell.cloneNode(true);
+
+    // Header ka naam change
+    if (rowIndex === 0) {
+      clonedCell.innerText = "Other";
+    }
+
+    // Insert just after Self
+    selfCell.after(clonedCell);
+  });
+};
 
   const getMfiName = async () => {
     const api = `api/auth/mam-mfi-short-name?MFI_Name=${userdetails.data.user.MFI_Name ? userdetails.data.user.MFI_Name : ""}`;
@@ -144,6 +182,15 @@ function ComprisionReport() {
     getComparisonInfo();
     getQuatarList();
   }, []);
+
+
+  useEffect(() => {
+  if (ComparisonInfo) {
+    setTimeout(() => {
+      addOtherColumn();
+    }, 0);
+  }
+}, [ComparisonInfo]);
 
   return (
     <>

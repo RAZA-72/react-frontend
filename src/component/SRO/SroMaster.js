@@ -1182,7 +1182,7 @@ const prevTabRef = useRef(value);
     }
 
     try {
-      const url = `${BaseUrl}/api/auth/get_single_data_all_qauters?entityType=${encodeURIComponent(entityType)}`;
+      const url = `${BaseUrl}/api/auth/get_single_data_all_qauters?}`;
       const response = await axios.get(url, { headers: authHeaders() });
 
       if (response.data && response.data.status) {

@@ -534,6 +534,215 @@
 
 // export default AvgTrendIndustry;
 
+// import React, { useRef } from "react";
+// import { Box, IconButton, Tooltip } from "@mui/material";
+// import MenuIcon from "@mui/icons-material/Menu";
+
+// const AvgTrendIndustry = ({ garph56ir }) => {
+//   const svgRef = useRef(null);
+
+//   const defaultData = [
+//     { category: "NBFC-MFI", min: 0, avg: 0, max: 0 },
+//     { category: "Bank", min: 0, avg: 0, max: 0 },
+//     { category: "SFB", min: 0, avg: 0, max: 0 },
+//     { category: "NBFC", min: 0, avg: 0, max: 0 }
+//   ];
+
+//   let data = defaultData;
+
+//   if (garph56ir && garph56ir.graph6 && garph56ir.graph6.length > 0) {
+//     data = garph56ir.graph6.map(item => ({
+//       category: item.entity_type || "",
+//       min: parseFloat((item.min_rate || "0").replace("%", "")) || 0,
+//       avg: parseFloat((item.wirr || "0").replace("%", "")) || 0,
+//       max: parseFloat((item.max_rate || "0").replace("%", "")) || 0
+//     }));
+//   }
+
+//   const yMin = Math.min(...data.map(d => d.min)) - 2;
+//   const yMax = Math.max(...data.map(d => d.max)) + 2;
+//   const chartHeight = 270;
+//   const chartWidth = 620;
+//   const padding = { top: 50, right: 50, bottom: 50, left: 0 };
+
+//   const getYPosition = (val) => {
+//     const ratio = (val - yMin) / (yMax - yMin || 1);
+//     return chartHeight - ratio * chartHeight;
+//   };
+
+//   const getXPosition = (index) => {
+//     const segmentWidth = chartWidth / data.length;
+//     return segmentWidth * index + segmentWidth / 2;
+//   };
+
+//   const downloadChartAsPNG = () => {
+//     if (!svgRef.current) return;
+
+//     const svg = svgRef.current;
+//     const svgData = new XMLSerializer().serializeToString(svg);
+//     const canvas = document.createElement("canvas");
+//     const ctx = canvas.getContext("2d");
+
+//     canvas.width = svg.clientWidth || 800;
+//     canvas.height = svg.clientHeight || 400;
+
+//     const img = new Image();
+//     const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+//     const url = URL.createObjectURL(blob);
+
+//     img.onload = () => {
+//       ctx.fillStyle = "#fff";
+//       ctx.fillRect(0, 0, canvas.width, canvas.height);
+//       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+//       const pngUrl = canvas.toDataURL("image/png");
+
+//       const link = document.createElement("a");
+//       link.href = pngUrl;
+//       link.download = "Interest_Rates_Across_Industries.png";
+//       document.body.appendChild(link);
+//       link.click();
+//       document.body.removeChild(link);
+//       URL.revokeObjectURL(url);
+//     };
+
+//     img.src = url;
+//   };
+
+//   return (
+//     <Box
+//       sx={{
+//         width: "100%",
+//         p: 2,
+//         backgroundColor: "#ffffff",
+//         fontFamily: "sans-serif",
+//         overflow: "hidden",
+//         position: "relative"
+//       }}
+//     >
+//       {/* Download button */}
+//       <Box sx={{ position: "absolute", top: 16, right: 16, zIndex: 1 }}>
+//         <Tooltip title="Download Chart">
+//           <IconButton onClick={downloadChartAsPNG}>
+//             <MenuIcon fontSize="small" />
+//           </IconButton>
+//         </Tooltip>
+//       </Box>
+
+//       {/* Title */}
+//       <Box
+//         sx={{
+//           fontSize: "16px",
+//           fontWeight: "bold",
+//           mb: 2.5,
+//           color: "#263238",
+//           textAlign: "left",
+//           pr: 6
+//         }}
+//       >
+//         Interest rates across industries of the selected quarter
+//       </Box>
+
+//       <svg
+//         ref={svgRef}
+//         width={chartWidth + padding.left + padding.right}
+//         height={chartHeight + padding.top + padding.bottom}
+//         style={{ overflow: "visible" }}
+//       >
+//         {/* Axis lines */}
+//         <line
+//           x1={padding.left}
+//           y1={padding.top + chartHeight}
+//           x2={padding.left + chartWidth}
+//           y2={padding.top + chartHeight}
+//           stroke="#d0d0d0"
+//         />
+
+//         <line
+//           x1={padding.left + chartWidth}
+//           y1={padding.top}
+//           x2={padding.left + chartWidth}
+//           y2={padding.top + chartHeight}
+//           stroke="#d0d0d0"
+//         />
+
+//         {data.map((item, index) => {
+//           const x = getXPosition(index);
+//           const minY = getYPosition(item.min);
+//           const avgY = getYPosition(item.avg);
+//           const maxY = getYPosition(item.max);
+
+//           return (
+//             <g key={index}>
+//               {/* Main vertical line */}
+//               <line
+//                 x1={padding.left + x}
+//                 y1={padding.top + minY}
+//                 x2={padding.left + x}
+//                 y2={padding.top + maxY}
+//                 stroke="#666666"
+//                 strokeWidth="2.5"
+//               />
+
+//               {/* Max label (Blue) */}
+//               <text
+//                 x={padding.left + x}
+//                 y={padding.top + maxY - 10}
+//                 textAnchor="middle"
+//                 fontSize="15px"
+//                 fontWeight="bold"
+//                 fontFamily="sans-serif"
+//                 fill="#2B60AD"
+//               >
+//                 {item.max.toFixed(2)}%
+//               </text>
+
+//               {/* Avg label (Teal/Green) */}
+//               <text
+//                 x={padding.left + x - 45}
+//                 y={padding.top + avgY + 5}
+//                 textAnchor="middle"
+//                 fontSize="15px"
+//                 fontWeight="bold"
+//                 fontFamily="sans-serif"
+//                 fill="#39B1AC"
+//               >
+//                 {item.avg.toFixed(2)}%
+//               </text>
+
+//               {/* Min label (Pink) */}
+//               <text
+//                 x={padding.left + x}
+//                 y={padding.top + minY + 20}
+//                 textAnchor="middle"
+//                 fontSize="15px"
+//                 fontWeight="bold"
+//                 fontFamily="sans-serif"
+//                 fill="#B853A0"
+//               >
+//                 {item.min.toFixed(2)}%
+//               </text>
+
+//               {/* Category label (Dark grey) */}
+//               <text
+//                 x={padding.left + x}
+//                 y={padding.top + chartHeight + 30}
+//                 textAnchor="middle"
+//                 fontSize="15px"
+//                 fontWeight="500"
+//                 fontFamily="sans-serif"
+//                 fill="#444"
+//               >
+//                 {item.category}
+//               </text>
+//             </g>
+//           );
+//         })}
+//       </svg>
+//     </Box>
+//   );
+// };
+
+// export default AvgTrendIndustry;
 import React, { useRef } from "react";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -652,14 +861,6 @@ const AvgTrendIndustry = ({ garph56ir }) => {
         <line
           x1={padding.left}
           y1={padding.top + chartHeight}
-          x2={padding.left + chartWidth}
-          y2={padding.top + chartHeight}
-          stroke="#d0d0d0"
-        />
-
-        <line
-          x1={padding.left + chartWidth}
-          y1={padding.top}
           x2={padding.left + chartWidth}
           y2={padding.top + chartHeight}
           stroke="#d0d0d0"

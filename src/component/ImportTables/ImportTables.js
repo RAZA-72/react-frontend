@@ -672,76 +672,76 @@ const ImportTables = () => {
     }
   };
   //* sro inrest rate import *//
-const INTERESTRATEInitialState = {
-  isLoader: false,
-  isDisabled: true,
-  csv_import: null,
-};
-
-const [INTERESTRATEDATA, setINTERESTRATEDATA] = useState(
-  INTERESTRATEInitialState
-);
-
-const changeImportInterestRateCsv = (event) => {
-  if (event.target.files[0]) {
-    setINTERESTRATEDATA({
-      ...INTERESTRATEDATA,
-      csv_import: event.target.files[0],
-      isDisabled: false,
-    });
-  } else {
-    setINTERESTRATEDATA({
-      ...INTERESTRATEDATA,
-      csv_import: null,
-      isDisabled: true,
-    });
-  }
-};
-
-
- const btnImportInterestRate = async () => {
-  setINTERESTRATEDATA({
-    ...INTERESTRATEDATA,
+  const INTERESTRATEInitialState = {
+    isLoader: false,
     isDisabled: true,
-    isLoader: true,
-  });
+    csv_import: null,
+  };
 
-  const formData = new FormData();
-  formData.append(
-    "csv_import",
-    INTERESTRATEDATA.csv_import,
-    INTERESTRATEDATA.csv_import.name
+  const [INTERESTRATEDATA, setINTERESTRATEDATA] = useState(
+    INTERESTRATEInitialState
   );
 
-  const api = importintrestrate; // ✔ YOUR VARIABLE
+  const changeImportInterestRateCsv = (event) => {
+    if (event.target.files[0]) {
+      setINTERESTRATEDATA({
+        ...INTERESTRATEDATA,
+        csv_import: event.target.files[0],
+        isDisabled: false,
+      });
+    } else {
+      setINTERESTRATEDATA({
+        ...INTERESTRATEDATA,
+        csv_import: null,
+        isDisabled: true,
+      });
+    }
+  };
 
-  const res = await axios
-    .post(`${BaseUrl}/${api}`, formData, { headers: authHeaders() })
-    .then((response) => {
-      console.log("Interest Rate Response", response);
-      return response;
-    })
-    .catch((error) => {
-      console.log("Interest Rate Error", error);
-      return error.response;
+
+  const btnImportInterestRate = async () => {
+    setINTERESTRATEDATA({
+      ...INTERESTRATEDATA,
+      isDisabled: true,
+      isLoader: true,
     });
 
-  if (res && res.status === 200) {
-    SuccessToastMessage(res.data.message, "Success");
-    setINTERESTRATEDATA(INTERESTRATEInitialState);
-    refinterestarate.current.value = null; // ✔ YOUR variable
-  } 
-  else if (res && res.status === 401) {
-    ErrorToastMessage(res.data.error.csv_import[0], "Failed");
-    setINTERESTRATEDATA(INTERESTRATEInitialState);
-    refinterestarate.current.value = null;
-  } 
-  else if (res && res.data.message !== undefined) {
-    ErrorToastMessage(res.data.message, "Failed");
-    setINTERESTRATEDATA(INTERESTRATEInitialState);
-    refinterestarate.current.value = null;
-  }
-};
+    const formData = new FormData();
+    formData.append(
+      "csv_import",
+      INTERESTRATEDATA.csv_import,
+      INTERESTRATEDATA.csv_import.name
+    );
+
+    const api = importintrestrate; // ✔ YOUR VARIABLE
+
+    const res = await axios
+      .post(`${BaseUrl}/${api}`, formData, { headers: authHeaders() })
+      .then((response) => {
+        console.log("Interest Rate Response", response);
+        return response;
+      })
+      .catch((error) => {
+        console.log("Interest Rate Error", error);
+        return error.response;
+      });
+
+    if (res && res.status === 200) {
+      SuccessToastMessage(res.data.message, "Success");
+      setINTERESTRATEDATA(INTERESTRATEInitialState);
+      refinterestarate.current.value = null; // ✔ YOUR variable
+    }
+    else if (res && res.status === 401) {
+      ErrorToastMessage(res.data.error.csv_import[0], "Failed");
+      setINTERESTRATEDATA(INTERESTRATEInitialState);
+      refinterestarate.current.value = null;
+    }
+    else if (res && res.data.message !== undefined) {
+      ErrorToastMessage(res.data.message, "Failed");
+      setINTERESTRATEDATA(INTERESTRATEInitialState);
+      refinterestarate.current.value = null;
+    }
+  };
 
 
 
@@ -2017,11 +2017,12 @@ const changeImportInterestRateCsv = (event) => {
                             variant="contained"
                             className={classes.Buttonbg}
                             sx={{ mt: 1, mb: 2 }}
-                            onClick={INTERESTRATEDATA.isDisabled}
-                            disabled={btnImportInterestRate}
+                            onClick={btnImportInterestRate}
+                            disabled={INTERESTRATEDATA.isDisabled}
                           >
                             Upload
                           </Button>
+
                         </Grid>
                       </Grid>
 

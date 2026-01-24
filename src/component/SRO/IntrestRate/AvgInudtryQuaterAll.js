@@ -1970,24 +1970,280 @@
 // };
 
 // export default AvgIndustryQuaterAll;
+// import React, { useMemo, useRef } from "react";
+// import { Box, IconButton, Tooltip } from "@mui/material";
+// import DownloadIcon from "@mui/icons-material/Download";
+
+// const ENTITY_COLORS = {
+//   "NBFC-MFI": "#FDBF11",
+//   "Bank": "#39B1AC",
+//   "SFB": "#F05D5F",
+//   "NBFC": "#69AB44",
+// };
+
+// const AvgIndustryQuaterAll = ({
+//   graphSingleAllqauter = [],
+//   availableRangeTitle = "",
+// }) => {
+
+//   // -------------------------------------------------
+//   // 1. STATIC 0.00 DATA (API se pehle)
+//   // -------------------------------------------------
+//   const staticZeroData = ["NBFC-MFI", "Bank", "SFB", "NBFC"].flatMap((cat) =>
+//     ["Q3 FY 24-25", "Q4 FY 24-25", "Q1 FY 25-26", "Q2 FY 25-26"].map((q) => ({
+//       category: cat,
+//       quarter: q,
+//       min: 0,
+//       avg: 0,
+//       max: 0,
+//       color: ENTITY_COLORS[cat],
+//     }))
+//   );
+
+//   // -------------------------------------------------
+//   // 2. API → CHART DATA
+// const data = useMemo(() => {
+//   if (!Array.isArray(graphSingleAllqauter) || graphSingleAllqauter.length === 0) {
+//     return staticZeroData;
+//   }
+
+//   const transformed = [];
+
+//   graphSingleAllqauter.forEach((entityObj) => {
+//     const entityType = entityObj.entity_type;
+
+//     if (!Array.isArray(entityObj.quarters)) return;
+
+//     entityObj.quarters.forEach((q) => {
+//       transformed.push({
+//         category: entityType,
+//         quarter: q.period,
+//         min: parseFloat(q.min_rate.replace("%", "")) || 0,
+//         avg: parseFloat(q.wirr.replace("%", "")) || 0,
+//         max: parseFloat(q.max_rate.replace("%", "")) || 0,
+//         color: ENTITY_COLORS[entityType] || "#999",
+//       });
+//     });
+//   });
+
+//   return transformed.length ? transformed : staticZeroData;
+// }, [graphSingleAllqauter]);
+
+
+//   // -------------------------------------------------
+//   // 3. SVG CONFIG (AvgTrendIndustry jaisa)
+//   // -------------------------------------------------
+//   const svgRef = useRef(null);
+//   const chartHeight = 270;
+//   const chartWidth = 1240;
+//   const padding = { top: 50, right: 50, bottom: 50, left: 20 };
+
+//   // 🔥 CENTER FIX
+//   const yMin = Math.min(...data.map(d => d.min)) - 2;
+//   const yMax = Math.max(...data.map(d => d.max)) + 2;
+
+//   const getYPosition = (val) => {
+//     const ratio = (val - yMin) / (yMax - yMin || 1);
+//     return chartHeight - ratio * chartHeight;
+//   };
+
+//   const getXPosition = (index) => {
+//     const segmentWidth = chartWidth / data.length;
+//     return segmentWidth * index + segmentWidth / 2;
+//   };
+
+//   // -------------------------------------------------
+//   // 4. DOWNLOAD
+//   // -------------------------------------------------
+//   const downloadChartAsPNG = () => {
+//     if (!svgRef.current) return;
+
+//     const svg = svgRef.current;
+//     const svgData = new XMLSerializer().serializeToString(svg);
+//     const canvas = document.createElement("canvas");
+//     const ctx = canvas.getContext("2d");
+
+//     canvas.width = svg.clientWidth || 1300;
+//     canvas.height = svg.clientHeight || 600;
+
+//     const img = new Image();
+//     const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+//     const url = URL.createObjectURL(blob);
+
+//     img.onload = () => {
+//       ctx.fillStyle = "#fff";
+//       ctx.fillRect(0, 0, canvas.width, canvas.height);
+//       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+//       const pngUrl = canvas.toDataURL("image/png");
+
+//       const link = document.createElement("a");
+//       link.href = pngUrl;
+//       link.download = "Interest_Rates_Across_Industries.png";
+//       link.click();
+//       URL.revokeObjectURL(url);
+//     };
+
+//     img.src = url;
+//   };
+
+//   // -------------------------------------------------
+//   // 5. RENDER
+//   // -------------------------------------------------
+//   const categories = ["NBFC-MFI", "Bank", "SFB", "NBFC"];
+//   const itemsPerCategory = data.length / categories.length;
+
+//   return (
+//     <Box
+//       sx={{
+//         width: "100%",
+//         p: 2,
+//         backgroundColor: "#ffffff",
+//         fontFamily: "sans-serif",
+//         position: "relative",
+//         pl: "20px",
+//       }}
+//     >
+//       {/* Download */}
+//       <Box sx={{ position: "absolute", top: 16, right: 16 }}>
+//         <Tooltip title="Download Chart">
+//           <IconButton onClick={downloadChartAsPNG}>
+//             <DownloadIcon fontSize="small" />
+//           </IconButton>
+//         </Tooltip>
+//       </Box>
+
+//       {/* 🔥 TITLE — SAME FONT AS CATEGORY */}
+//       <Box
+//      sx={{
+//           fontSize: "16px",
+//           fontWeight: "bold",
+//           mb: 2.5,
+//           color: "#263238",
+//           textAlign: "left",
+//           pr: 6
+//         }}
+//       >
+//         Interest Rates Across Industries – Min, Avg & Max
+//         {availableRangeTitle && ` (${availableRangeTitle})`}
+//       </Box>
+
+//       <Box sx={{ display: "flex", justifyContent: "center" }}>
+//         <svg
+//           ref={svgRef}
+//           width={chartWidth + padding.left + padding.right}
+//           height={chartHeight + padding.top + padding.bottom}
+//           style={{ overflow: "visible" }}
+//         >
+//           {data.map((item, index) => {
+//             const x = getXPosition(index);
+//             const minY = getYPosition(item.min);
+//             const avgY = getYPosition(item.avg);
+//             const maxY = getYPosition(item.max);
+
+//             return (
+//               <g key={index}>
+//                 <line
+//                   x1={padding.left + x}
+//                   y1={padding.top + minY}
+//                   x2={padding.left + x}
+//                   y2={padding.top + maxY}
+//                   stroke="#2B60AD"
+//                   strokeWidth="2.5"
+//                 />
+
+//                 <text
+//                   x={padding.left + x}
+//                   y={padding.top + maxY - 10}
+//                   textAnchor="middle"
+//                   fontSize="11px"
+//                   fontWeight="bold"
+//                   fill="#2B60AD"
+//                 >
+//                   {item.max.toFixed(2)}%
+//                 </text>
+
+//                 <circle
+//                   cx={padding.left + x}
+//                   cy={padding.top + avgY}
+//                   r="4"
+//                   fill={item.color}
+//                   stroke="#fff"
+//                   strokeWidth="1.5"
+//                 />
+
+//                 <text
+//                   x={padding.left + x - 35}
+//                   y={padding.top + avgY + 4}
+//                   textAnchor="middle"
+//                   fontSize="11px"
+//                   fontWeight="bold"
+//                   fill={item.color}
+//                 >
+//                   {item.avg.toFixed(2)}%
+//                 </text>
+
+//                 <text
+//                   x={padding.left + x}
+//                   y={padding.top + minY + 18}
+//                   textAnchor="middle"
+//                   fontSize="11px"
+//                   fontWeight="bold"
+//                   fill="#2B60AD"
+//                 >
+//                   {item.min.toFixed(2)}%
+//                 </text>
+
+//                 <text
+//                   x={padding.left + x}
+//                   y={padding.top + chartHeight + 20}
+//                   textAnchor="middle"
+//                   fontSize="10px"
+//                   fill="#666"
+//                 >
+//                   {item.quarter}
+//                 </text>
+//               </g>
+//             );
+//           })}
+
+//           {/* CATEGORY LABELS */}
+//           {categories.map((cat, i) => (
+//             <text
+//               key={cat}
+//               x={padding.left + getXPosition(i * itemsPerCategory + itemsPerCategory / 2)}
+//               y={padding.top + chartHeight + 45}
+//               textAnchor="middle"
+//               fontSize="15px"
+//               fontWeight="500"
+//               fill="#444"
+//             >
+//               {cat}
+//             </text>
+//           ))}
+//         </svg>
+//       </Box>
+//     </Box>
+//   );
+// };
+
+// export default AvgIndustryQuaterAll;
 import React, { useMemo, useRef } from "react";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 
 const ENTITY_COLORS = {
   "NBFC-MFI": "#FDBF11",
-  "Bank": "#39B1AC",
-  "SFB": "#F05D5F",
-  "NBFC": "#69AB44",
+  Bank: "#39B1AC",
+  SFB: "#F05D5F",
+  NBFC: "#69AB44",
 };
 
 const AvgIndustryQuaterAll = ({
   graphSingleAllqauter = [],
   availableRangeTitle = "",
 }) => {
-
   // -------------------------------------------------
-  // 1. STATIC 0.00 DATA (API se pehle)
+  // 1. STATIC ZERO DATA
   // -------------------------------------------------
   const staticZeroData = ["NBFC-MFI", "Bank", "SFB", "NBFC"].flatMap((cat) =>
     ["Q3 FY 24-25", "Q4 FY 24-25", "Q1 FY 25-26", "Q2 FY 25-26"].map((q) => ({
@@ -2010,17 +2266,17 @@ const AvgIndustryQuaterAll = ({
 
     const transformed = [];
 
-    graphSingleAllqauter.forEach((quarterObj) => {
-      if (!Array.isArray(quarterObj.graph6)) return;
+    graphSingleAllqauter.forEach((entityObj) => {
+      if (!Array.isArray(entityObj.quarters)) return;
 
-      quarterObj.graph6.forEach((e) => {
+      entityObj.quarters.forEach((q) => {
         transformed.push({
-          category: e.entity_type,
-          quarter: quarterObj.period,
-          min: parseFloat(String(e.min_rate).replace("%", "")) || 0,
-          avg: parseFloat(String(e.wirr).replace("%", "")) || 0,
-          max: parseFloat(String(e.max_rate).replace("%", "")) || 0,
-          color: ENTITY_COLORS[e.entity_type] || "#999",
+          category: entityObj.entity_type,
+          quarter: q.period,
+          min: parseFloat(q.min_rate.replace("%", "")) || 0,
+          avg: parseFloat(q.wirr.replace("%", "")) || 0,
+          max: parseFloat(q.max_rate.replace("%", "")) || 0,
+          color: ENTITY_COLORS[entityObj.entity_type] || "#999",
         });
       });
     });
@@ -2029,16 +2285,15 @@ const AvgIndustryQuaterAll = ({
   }, [graphSingleAllqauter]);
 
   // -------------------------------------------------
-  // 3. SVG CONFIG (AvgTrendIndustry jaisa)
+  // 3. SVG CONFIG
   // -------------------------------------------------
   const svgRef = useRef(null);
   const chartHeight = 270;
   const chartWidth = 1240;
-  const padding = { top: 50, right: 50, bottom: 50, left: 20 };
+  const padding = { top: 50, right: 50, bottom: 50, left: 30 };
 
-  // 🔥 CENTER FIX
-  const yMin = Math.min(...data.map(d => d.min)) - 2;
-  const yMax = Math.max(...data.map(d => d.max)) + 2;
+  const yMin = Math.min(...data.map((d) => d.min)) - 2;
+  const yMax = Math.max(...data.map((d) => d.max)) + 2;
 
   const getYPosition = (val) => {
     const ratio = (val - yMin) / (yMax - yMin || 1);
@@ -2096,9 +2351,8 @@ const AvgIndustryQuaterAll = ({
         width: "100%",
         p: 2,
         backgroundColor: "#ffffff",
-        fontFamily: "sans-serif",
         position: "relative",
-        pl: "20px",
+        fontFamily: "sans-serif",
       }}
     >
       {/* Download */}
@@ -2110,28 +2364,37 @@ const AvgIndustryQuaterAll = ({
         </Tooltip>
       </Box>
 
-      {/* 🔥 TITLE — SAME FONT AS CATEGORY */}
+      {/* Title */}
       <Box
-     sx={{
+        sx={{
           fontSize: "16px",
           fontWeight: "bold",
           mb: 2.5,
           color: "#263238",
-          textAlign: "left",
-          pr: 6
         }}
       >
         Interest Rates Across Industries – Min, Avg & Max
         {availableRangeTitle && ` (${availableRangeTitle})`}
       </Box>
 
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
+      <Box sx={{ display: "flex", justifyContent: "left" }}>
         <svg
           ref={svgRef}
           width={chartWidth + padding.left + padding.right}
           height={chartHeight + padding.top + padding.bottom}
-          style={{ overflow: "visible" }}
         >
+{/* X AXIS LINE (Quarter baseline) */}
+<line
+  x1={padding.left}
+y1={padding.top + chartHeight + 22}
+y2={padding.top + chartHeight + 22}
+  x2={padding.left + chartWidth}
+  stroke="#d0d0d0"
+  strokeWidth="1"
+/>
+
+
+          {/* DATA */}
           {data.map((item, index) => {
             const x = getXPosition(index);
             const minY = getYPosition(item.min);
@@ -2193,7 +2456,7 @@ const AvgIndustryQuaterAll = ({
 
                 <text
                   x={padding.left + x}
-                  y={padding.top + chartHeight + 20}
+                  y={padding.top + chartHeight + 6}
                   textAnchor="middle"
                   fontSize="10px"
                   fill="#666"
@@ -2204,11 +2467,33 @@ const AvgIndustryQuaterAll = ({
             );
           })}
 
+          {/* ✅ ENTITY SEPARATOR LINES */}
+          {categories.map((_, i) => {
+            const xIndex = i * itemsPerCategory;
+            const x =
+              getXPosition(xIndex) - chartWidth / data.length / 2;
+
+            return (
+              <line
+                key={i}
+                x1={padding.left + x}
+                y1={padding.top}
+                x2={padding.left + x}
+                y2={padding.top + chartHeight}
+                stroke="#E0E0E0"
+                strokeWidth="1"
+              />
+            );
+          })}
+
           {/* CATEGORY LABELS */}
           {categories.map((cat, i) => (
             <text
               key={cat}
-              x={padding.left + getXPosition(i * itemsPerCategory + itemsPerCategory / 2)}
+              x={
+                padding.left +
+                getXPosition(i * itemsPerCategory + itemsPerCategory / 2)
+              }
               y={padding.top + chartHeight + 45}
               textAnchor="middle"
               fontSize="15px"

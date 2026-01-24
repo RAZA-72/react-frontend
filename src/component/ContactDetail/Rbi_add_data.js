@@ -1,109 +1,76 @@
-  import { createStyles, makeStyles } from "@material-ui/styles";
-  import { Button, Card, CardActionArea, Typography } from "@mui/material";
-  import * as React from "react";
-  import Box from "@mui/material/Box";
-  import GrassIcon from "@mui/icons-material/Grass";
-  import Grid from "@mui/material/Unstable_Grid2";
-  import "bootstrap/dist/css/bootstrap.min.css";
-  import { useNavigate } from "react-router-dom";
-  import Breadcrumb from "../common/Breadcrumb";
-  import axios from "axios";
-  import { useState } from "react";
+import { createStyles, makeStyles } from "@material-ui/styles";
+import { Button, Card, CardActionArea, Typography } from "@mui/material";
+import * as React from "react";
+import Box from "@mui/material/Box";
+import GrassIcon from "@mui/icons-material/Grass";
+import Grid from "@mui/material/Unstable_Grid2";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { useNavigate } from "react-router-dom";
+import Breadcrumb from "../common/Breadcrumb";
+import axios from "axios";
+import { useState } from "react";
 
-  const useStyle = makeStyles((theme) => createStyles({}));
+const useStyle = makeStyles((theme) => createStyles({}));
 
-  const Rbi_add_data = () => {
-    const [records, setRecords] = useState([
+const Rbi_add_data = () => {
+  const [records, setRecords] = useState([
+    {
+      fy_year: "",
+      quarter: "", // Empty initially - aap khud daalenge
+      Part: "",
+      document: null,
+    },
+  ]);
+  const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [fieldError, setFieldError] = useState(false);
+
+  const navigate = useNavigate();
+
+  // Add new record field
+  const addRecord = () => {
+    setRecords([
+      ...records,
       {
         fy_year: "",
-        quarter: "", // Empty initially - aap khud daalenge
+        quarter: "", // Empty for new records too
         Part: "",
         document: null,
       },
     ]);
-    const [message, setMessage] = useState("");
-    const [isError, setIsError] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
-    const [fieldError, setFieldError] = useState(false);
+  };
 
-    const navigate = useNavigate();
-
-    // Add new record field
-    const addRecord = () => {
-      setRecords([
-        ...records,
-        {
-          fy_year: "",
-          quarter: "", // Empty for new records too
-          Part: "",
-          document: null,
-        },
-      ]);
-    };
-
-    // Remove record field
-    const removeRecord = (index) => {
-      if (records.length > 1) {
-        const updatedRecords = records.filter((_, i) => i !== index);
-        setRecords(updatedRecords);
-      }
-    };
-
-
-
-    // Handle input change for records
-    const handleRecordChange = (index, field, value) => {
-      const updatedRecords = [...records];
-      updatedRecords[index][field] = value;
+  // Remove record field
+  const removeRecord = (index) => {
+    if (records.length > 1) {
+      const updatedRecords = records.filter((_, i) => i !== index);
       setRecords(updatedRecords);
-    };
+    }
+  };
 
-    // Handle file upload for specific record
-    const handleFileChange = (index, file) => {
-      const updatedRecords = [...records];
-      updatedRecords[index].document = file;
-      setRecords(updatedRecords);
-    };
+
+
+  // Handle input change for records
+  const handleRecordChange = (index, field, value) => {
+    const updatedRecords = [...records];
+    updatedRecords[index][field] = value;
+    setRecords(updatedRecords);
+  };
+
+  // Handle file upload for specific record
+  const handleFileChange = (index, file) => {
+    const updatedRecords = [...records];
+    updatedRecords[index].document = file;
+    setRecords(updatedRecords);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const isValid = records.every(
-      (r) => r.fy_year && r.quarter && r.Part
-    );
-
-    if (!isValid) {
-      setMessage("Please fill all required fields");
-      setIsError(true);
-      return;
-    }
 
     try {
       const formData = new FormData();
 
       records.forEach((record, index) => {
-        if (!record.document) {
-          setMessage(`Upload file for record ${index + 1}`);
-          setIsError(true);
-          throw new Error("File missing");
-        }
-
-        const ext = record.document.name.split(".").pop().toLowerCase();
-        const part = record.Part.trim().toLowerCase();
-
-        // ✅ Part II → Excel only
-        if (part === "part ii" && !["xls", "xlsx"].includes(ext)) {
-          setMessage("Part II allows only Excel files (.xls or .xlsx)");
-          setIsError(true);
-          throw new Error("Invalid file");
-        }
-
-        // ✅ Part I → PDF only
-        if (part === "part i" && ext !== "pdf") {
-          setMessage("Part I allows only PDF files");
-          setIsError(true);
-          throw new Error("Invalid file");
-        }
-
         formData.append(`records[${index}][fy_year]`, record.fy_year);
         formData.append(`records[${index}][quarter]`, record.quarter);
         formData.append(`records[${index}][Part]`, record.Part);
@@ -112,238 +79,247 @@
 
       const response = await axios.post(
         "http://api.mfinindia.org/api/auth/rbi-data-upload",
-        formData
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
 
-      if (response.status === 201) {
-        setMessage("All records saved successfully");
-        setIsSuccess(true);
-        setIsError(false);
-      }
+      setIsSuccess(true);
+      setIsError(false);
+      setMessage(response.data.message);
+
     } catch (err) {
-      console.log(err);
-      if (!isError) {
-        setMessage("Error saving data");
-        setIsError(true);
-      }
+      console.error(err);
+      setIsError(true);
+      setMessage("Upload failed");
     }
   };
 
 
-    const classes = useStyle();
 
-    return (
-      <Box sx={{ flexGrow: 1 }} mt={10}>
-        <Grid container spacing={1}>
-          <Grid xs={12} sm={12} md={12}>
-            <div role="presentation">
-              <Breadcrumb title="RBI Data Upload" icon={GrassIcon} />
-            </div>
-          </Grid>
+  const classes = useStyle();
 
-          <Card style={{ padding: "20px", marginTop: "30px", width: "100%" }}>
-            <CardActionArea>
-              <Box component="form" noValidate sx={{ mt: 1 }}>
-                {/* Success/Error Messages */}
-                {message && (
-                  <div
-                    style={{
-                      padding: "10px",
-                      marginBottom: "20px",
-                      borderRadius: "4px",
-                      backgroundColor: isSuccess ? "#d4edda" : "#f8d7da",
-                      color: isSuccess ? "#155724" : "#721c24",
-                      border: `1px solid ${isSuccess ? "#c3e6cb" : "#f5c6cb"}`,
-                    }}
-                  >
-                    <strong>{isSuccess ? "Success!" : "Error!"}</strong> {message}
-                  </div>
-                )}
+  return (
+    <Box sx={{ flexGrow: 1 }} mt={10}>
+      <Grid container spacing={1}>
+        <Grid xs={12} sm={12} md={12}>
+          <div role="presentation">
+            <Breadcrumb title="RBI Data Upload" icon={GrassIcon} />
+          </div>
+        </Grid>
 
-                {fieldError && !message && (
-                  <p style={{ color: "red" }}>
-                    <b>All fields are required for all records</b>
-                  </p>
-                )}
+        <Card style={{ padding: "20px", marginTop: "30px", width: "100%" }}>
+          <CardActionArea>
+            <Box
+              component="form"
+              noValidate
+              sx={{ mt: 1 }}
+              onSubmit={handleSubmit}
+            >
 
-                {/* Records Section */}
-                <Typography
-                  variant="h6"
-                  gutterBottom
-                  style={{ color: "red", marginBottom: "20px" }}
+              {/* Success/Error Messages */}
+              {message && (
+                <div
+                  style={{
+                    padding: "10px",
+                    marginBottom: "20px",
+                    borderRadius: "4px",
+                    backgroundColor: isSuccess ? "#d4edda" : "#f8d7da",
+                    color: isSuccess ? "#155724" : "#721c24",
+                    border: `1px solid ${isSuccess ? "#c3e6cb" : "#f5c6cb"}`,
+                  }}
                 >
-                  <b>RBI Data Records</b>
-                </Typography>
+                  <strong>{isSuccess ? "Success!" : "Error!"}</strong> {message}
+                </div>
+              )}
 
-                {records.map((record, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      border: "1px solid #ddd",
-                      padding: "15px",
-                      marginBottom: "15px",
-                      borderRadius: "5px",
-                    }}
+              {fieldError && !message && (
+                <p style={{ color: "red" }}>
+                  <b>All fields are required for all records</b>
+                </p>
+              )}
+
+              {/* Records Section */}
+              <Typography
+                variant="h6"
+                gutterBottom
+                style={{ color: "red", marginBottom: "20px" }}
+              >
+                <b>RBI Data Records</b>
+              </Typography>
+
+              {records.map((record, index) => (
+                <div
+                  key={index}
+                  style={{
+                    border: "1px solid #ddd",
+                    padding: "15px",
+                    marginBottom: "15px",
+                    borderRadius: "5px",
+                  }}
+                >
+                  <Typography
+                    variant="subtitle1"
+                    style={{ marginBottom: "15px", color: "#1976d2" }}
                   >
-                    <Typography
-                      variant="subtitle1"
-                      style={{ marginBottom: "15px", color: "#1976d2" }}
-                    >
-                      <b>Record {index + 1}</b>
-                    </Typography>
+                    <b>Record {index + 1}</b>
+                  </Typography>
 
-                    <Grid container spacing={2}>
-                      <Grid xs={12} sm={6} md={4}>
-                        <label
-                          style={{
-                            color: "red",
-                            marginBottom: "5px",
-                            display: "block",
-                          }}
-                        >
-                          <b>Financial Year *</b>
-                        </label>
-                        <input
-                          type="text"
-                          style={{ width: "100%" }}
-                          className="form-control"
-                          placeholder="e.g., FY 24-25"
-                          value={record.fy_year}
-                          onChange={(e) =>
-                            handleRecordChange(index, "fy_year", e.target.value)
-                          }
-                        />
-                      </Grid>
-
-                      <Grid xs={12} sm={6} md={4}>
-                        <label
-                          style={{
-                            color: "red",
-                            marginBottom: "5px",
-                            display: "block",
-                          }}
-                        >
-                          <b>Quarter *</b>
-                        </label>
-                        <input
-                          type="text"
-                          style={{ width: "100%" }}
-                          className="form-control"
-                          placeholder="e.g., Q1 FY 24-25"
-                          value={record.quarter}
-                          onChange={(e) =>
-                            handleRecordChange(index, "quarter", e.target.value)
-                          }
-                        />
-                      </Grid>
-
-                      <Grid xs={12} sm={6} md={4}>
-                        <label
-                          style={{
-                            color: "red",
-                            marginBottom: "5px",
-                            display: "block",
-                          }}
-                        >
-                          <b>Part *</b>
-                        </label>
-                        <select
-                          style={{ width: "100%" }}
-                          className="form-control"
-                          value={record.Part}
-                          onChange={(e) =>
-                            handleRecordChange(index, "Part", e.target.value)
-                          }
-                        >
-                          <option value="">Select Part</option>
-                          <option value="Part I">Part I</option>
-                          <option value="Part II">Part II</option>
-                        </select>
-                      </Grid>
-
-                      <Grid xs={12} sm={12} md={12}>
-                        <input
-                          type="file"
-                          style={{ width: "100%" }}
-                          className="form-control"
-                          accept=".pdf,.xlsx,.xls"
-                          onChange={(e) =>
-                            handleFileChange(index, e.target.files[0])
-                          }
-                        />
-                      </Grid>
-                      
-                        <small style={{ textAlign: "left",paddingLeft:"10px" }}>
-                          part1 for pdf and part2 for excel file only.
-                        </small>
-                      
-
-                      {records.length > 1 && (
-                        <Grid xs={12} sm={12} md={12}>
-                          <Button
-                            variant="outlined"
-                            color="error"
-                            size="small"
-                            onClick={() => removeRecord(index)}
-                          >
-                            Remove This Record
-                          </Button>
-                        </Grid>
-                      )}
+                  <Grid container spacing={2}>
+                    <Grid xs={12} sm={6} md={4}>
+                      <label
+                        style={{
+                          color: "red",
+                          marginBottom: "5px",
+                          display: "block",
+                        }}
+                      >
+                        <b>Financial Year *</b>
+                      </label>
+                      <input
+                        type="text"
+                        style={{ width: "100%" }}
+                        className="form-control"
+                        placeholder="e.g., FY 24-25"
+                        value={record.fy_year}
+                        onChange={(e) =>
+                          handleRecordChange(index, "fy_year", e.target.value)
+                        }
+                      />
                     </Grid>
-                  </div>
-                ))}
 
-                {records.length < 2 && (
-                  <Grid xs={12} sm={12} md={12} style={{ marginBottom: "20px" }}>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      onClick={addRecord}
-                      style={{ marginRight: "10px" }}
-                    >
-                      + Add Another Record
-                    </Button>
+                    <Grid xs={12} sm={6} md={4}>
+                      <label
+                        style={{
+                          color: "red",
+                          marginBottom: "5px",
+                          display: "block",
+                        }}
+                      >
+                        <b>Quarter *</b>
+                      </label>
+                      <input
+                        type="text"
+                        style={{ width: "100%" }}
+                        className="form-control"
+                        placeholder="e.g., Q1 FY 24-25"
+                        value={record.quarter}
+                        onChange={(e) =>
+                          handleRecordChange(index, "quarter", e.target.value)
+                        }
+                      />
+                    </Grid>
 
-                    <Typography
-                      variant="body2"
-                      style={{ color: "#666", display: "inline" }}
-                    >
-                      {records.length} record(s) added
-                    </Typography>
+                    <Grid xs={12} sm={6} md={4}>
+                      <label
+                        style={{
+                          color: "red",
+                          marginBottom: "5px",
+                          display: "block",
+                        }}
+                      >
+                        <b>Part *</b>
+                      </label>
+                      <select
+                        style={{ width: "100%" }}
+                        className="form-control"
+                        value={record.Part}
+                        onChange={(e) =>
+                          handleRecordChange(index, "Part", e.target.value)
+                        }
+                      >
+                        <option value="">Select Part</option>
+                        <option value="Part I">Part I</option>
+                        <option value="Part II">Part II</option>
+                      </select>
+                    </Grid>
+
+                    <Grid xs={12} sm={12} md={12}>
+                      <input
+                        type="file"
+                        style={{ width: "100%" }}
+                        className="form-control"
+                        accept=".pdf,.xlsx,.xls"
+                        onChange={(e) =>
+                          handleFileChange(index, e.target.files[0])
+                        }
+                      />
+                    </Grid>
+
+                    <small style={{ textAlign: "left", paddingLeft: "10px" }}>
+                      part1 for pdf and part2 for excel file only.
+                    </small>
+
+
+                    {records.length > 1 && (
+                      <Grid xs={12} sm={12} md={12}>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          size="small"
+                          onClick={() => removeRecord(index)}
+                        >
+                          Remove This Record
+                        </Button>
+                      </Grid>
+                    )}
                   </Grid>
-                )}
+                </div>
+              ))}
 
-                {/* Add More Records Button */}
-
-                {/* Submit Button */}
-                <Grid xs={12} sm={12} md={12}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    className={classes.Buttonbg}
-                    style={{ width: "150px", marginRight: "10px" }}
-                    sx={{ mt: 3, mb: 2 }}
-                    onClick={handleSubmit}
-                  >
-                    Submit
-                  </Button>
-
+              {records.length < 2 && (
+                <Grid xs={12} sm={12} md={12} style={{ marginBottom: "20px" }}>
                   <Button
                     variant="outlined"
-                    style={{ width: "150px" }}
-                    sx={{ mt: 3, mb: 2 }}
-                    onClick={() => navigate(-1)}
+                    color="primary"
+                    onClick={addRecord}
+                    style={{ marginRight: "10px" }}
                   >
-                    Cancel
+                    + Add Another Record
                   </Button>
-                </Grid>
-              </Box>
-            </CardActionArea>
-          </Card>
-        </Grid>
-      </Box>
-    );
-  };
 
-  export default Rbi_add_data;
+                  <Typography
+                    variant="body2"
+                    style={{ color: "#666", display: "inline" }}
+                  >
+                    {records.length} record(s) added
+                  </Typography>
+                </Grid>
+              )}
+
+              {/* Add More Records Button */}
+
+              {/* Submit Button */}
+              <Grid xs={12} sm={12} md={12}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  className={classes.Buttonbg}
+                  style={{ width: "150px", marginRight: "10px" }}
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Submit
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  style={{ width: "150px" }}
+                  sx={{ mt: 3, mb: 2 }}
+                  onClick={() => navigate(-1)}
+                >
+                  Cancel
+                </Button>
+              </Grid>
+            </Box>
+          </CardActionArea>
+        </Card>
+      </Grid>
+    </Box>
+  );
+};
+
+export default Rbi_add_data;
