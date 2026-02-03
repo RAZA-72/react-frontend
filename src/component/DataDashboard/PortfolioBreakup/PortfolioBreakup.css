@@ -14,3 +14,14 @@ td {
   padding: 10px;
   background-color: #fff;
 }
+/* PortfolioBreakup.css - Minimal CSS as most styling is inline */
+
+/* Smooth transitions for interactive elements */
+input:focus {
+  transition: all 0.2s ease;
+}
+
+/* Ensure proper box sizing */
+* {
+  box-sizing: border-box;
+}

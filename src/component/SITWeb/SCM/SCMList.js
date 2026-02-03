@@ -1006,7 +1006,7 @@
 
 // export default SCMList;
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Autocomplete, TextField } from "@mui/material";
 import axios from "axios";
@@ -1038,47 +1038,46 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import TableViewIcon from "@mui/icons-material/TableView";
-import { CleaningServices } from "@mui/icons-material";
 
 const SCMList = () => {
+  const isInternalNav = useRef(false);
+  const location = useLocation();
 
-  const [searchParams] = useSearchParams();
   const user = localStorage.getItem("user");
   const userData = JSON.parse(user);
   const userName = userData.data.user.name || "";
   const userRole = userData.data.role_name || "";
   const userEmail = userData.data.user.email;
 
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [regionalHead, setRegionalHead] = useState([]);
-
-  const navigate = useNavigate();
-  const location = useLocation();
-  const status = searchParams.get("status") || "open";
-  console.log("status in scm list", status)
-
-
-
-
-  // const searchParams = new URLSearchParams(location.search);
-  // const status = searchParams.get("status") || ""; // "open" or "closed"
-
-
-
-
+  const status = searchParams.get("status") || "";
+  const pageFromUrl = Number(searchParams.get("page")) || 1;
+  const midFromUrl = searchParams.get("mid") || "";
+  const rhFromUrl = searchParams.get("regional_head") || "";
 
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
 
-  const [filters, setFilters] = useState({
-    mid: "",
-    regional_head: "",
+  const [regionalHead, setRegionalHead] = useState([]);
+  const [currentPage, setCurrentPage] = useState(pageFromUrl);
+
+  const navigate = useNavigate();
+
+  const [draftFilters, setDraftFilters] = useState({
+    mid: midFromUrl,
+    regional_head: rhFromUrl,
   });
-  const [currentPage, setCurrentPage] = useState(1);
+
+  const [appliedFilters, setAppliedFilters] = useState({
+    mid: midFromUrl,
+    regional_head: rhFromUrl,
+  });
 
   const [filterOptions, setFilterOptions] = useState({
     mids: [],
   });
+
   const [loading, setLoading] = useState(true);
   const [selectedRows, setSelectedRows] = useState([]);
   const [toggleCleared, setToggleCleared] = useState(false);
@@ -1086,11 +1085,10 @@ const SCMList = () => {
   const [error, setError] = useState(null);
   const [showAllColumns, setShowAllColumns] = useState(false);
 
-  // Count active filters
   useEffect(() => {
-    const count = Object.values(filters).filter((val) => val !== "").length;
+    const count = Object.values(appliedFilters).filter(v => v !== "").length;
     setActiveFiltersCount(count);
-  }, [filters]);
+  }, [appliedFilters]);
 
   const fetchData = async (params = {}) => {
     setLoading(true);
@@ -1115,21 +1113,16 @@ const SCMList = () => {
         throw new Error("Invalid data structure from API");
       }
 
-      // Filter data based on status (case-insensitive)
       const statusFilteredData = response.data.data.filter((item) => {
         if (!item.hod_observation) return false;
         const obs = item.hod_observation.toLowerCase();
         const statusLower = status.toLowerCase();
-
-        // Include 'reopen' always
         return obs === statusLower || obs === "reopen";
       });
 
-      // Sort Reopen to top
       statusFilteredData.sort((a, b) => {
         const obsA = a.hod_observation ? a.hod_observation.toLowerCase() : "";
         const obsB = b.hod_observation ? b.hod_observation.toLowerCase() : "";
-
         if (obsA === "reopen" && obsB !== "reopen") return -1;
         if (obsA !== "reopen" && obsB === "reopen") return 1;
         return 0;
@@ -1137,10 +1130,8 @@ const SCMList = () => {
 
       console.log("SCM Filtered Data:", statusFilteredData);
       setData(statusFilteredData);
+      setFilteredData(statusFilteredData);
 
-      setFilteredData(statusFilteredData); // ✅ IMPORTANT
-
-      // Update filter options for MIDs
       setFilterOptions((prev) => ({
         ...prev,
         mids: response.data.data
@@ -1158,10 +1149,9 @@ const SCMList = () => {
   useEffect(() => {
     let mids = data;
 
-    // Agar Regional Head selected hai
-    if (filters.regional_head) {
+    if (appliedFilters.regional_head) {
       mids = mids.filter(
-        (item) => item.regional_head === filters.regional_head
+        (item) => item.regional_head === appliedFilters.regional_head
       );
     }
 
@@ -1171,32 +1161,26 @@ const SCMList = () => {
       ...prev,
       mids: uniqueMids,
     }));
-  }, [filters.regional_head, data]);
+  }, [appliedFilters.regional_head, data]);
 
   useEffect(() => {
     let tempData = [...data];
 
-    // MID filter
-    if (filters.mid) {
+    if (appliedFilters.mid) {
       tempData = tempData.filter(
-        (item) => String(item.id) === String(filters.mid)
+        (item) => String(item.id) === String(appliedFilters.mid)
       );
     }
 
-    // Regional Head filter
-    if (filters.regional_head) {
+    if (appliedFilters.regional_head) {
       tempData = tempData.filter(
-        (item) => item.regional_head === filters.regional_head
+        (item) => item.regional_head === appliedFilters.regional_head
       );
     }
 
     setFilteredData(tempData);
-    console.log("temp data", tempData)
-  }, [filters, data]);
+  }, [appliedFilters, data]);
 
-
-
-  //fetching regional head data
   useEffect(() => {
     const fetchRegionalHead = async () => {
       try {
@@ -1212,99 +1196,67 @@ const SCMList = () => {
 
     fetchRegionalHead();
   }, []);
+
   useEffect(() => {
-    console.log("🔁 SCMList mounted");
-    console.log("📦 location.state:", location.state);
+    if (isInternalNav.current) {
+      isInternalNav.current = false;
+      return;
+    }
 
-    if (location.state && location.state.listState) {
-      const { filters, currentPage } = location.state.listState;
+    setCurrentPage(pageFromUrl);
 
-      console.log("✅ Restoring filters:", filters);
-      console.log("✅ Restoring page:", currentPage);
+    const newApplied = {
+      mid: midFromUrl,
+      regional_head: rhFromUrl,
+    };
 
-      setFilters(filters);
+    setAppliedFilters(newApplied);
+    setDraftFilters(newApplied);
+
+    const apiFilters = {};
+    if (midFromUrl) apiFilters.id = midFromUrl;
+    if (rhFromUrl) apiFilters.regional_head = rhFromUrl;
+
+    fetchData(apiFilters);
+  }, [location.search, status]);
+
+  useEffect(() => {
+    if (location && location.state && location.state.listingState) {
+      const { appliedFilters, currentPage } = location.state.listingState;
+
+      setAppliedFilters(appliedFilters);
+      setDraftFilters(appliedFilters);
       setCurrentPage(currentPage);
 
-      fetchData(filters);
+      fetchData({
+        ...(appliedFilters.mid && { id: appliedFilters.mid }),
+        ...(appliedFilters.regional_head && {
+          regional_head: appliedFilters.regional_head,
+        }),
+      });
     } else {
-      console.log("🆕 First time load (no listState)");
       fetchData();
     }
   }, []);
 
-
-
-  // const handleFilterChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFilters((prev) => ({
-  //     ...prev,
-  //     [name]: value,
-  //   }));
-  // };
-
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-
-    setFilters((prev) => ({
-      ...prev,
-      [name]: value,
-      ...(name === "regional_head" && { mid: "" }) // 👈 IMPORTANT
-    }));
-  };
-
-
-  // const applyFilters = () => {
-  //   const filterParams = {};
-
-  //   Object.keys(filters).forEach((key) => {
-  //     if (filters[key] !== "") {
-  //       if (key === "mid") {
-  //         filterParams.id = filters[key]; // backend expects `id`
-  //       } else {
-  //         filterParams[key] = filters[key];
-  //       }
-  //     }
-  //   });
-
-  //   fetchData(filterParams);
-  // };
-
-  // const applyFilters = () => {
-  //   const filterParams = {};
-
-  //   Object.keys(filters).forEach((key) => {
-  //     if (filters[key] !== "") {
-  //       if (key === "mid") {
-  //         filterParams.id = filters[key];
-  //       } else {
-  //         filterParams[key] = filters[key];
-  //       }
-  //     }
-  //   });
-
-  //   fetchData(filterParams);
-  // };
-
   const applyFilters = () => {
-    setCurrentPage(1);
-    fetchData(filters);
+    setAppliedFilters(draftFilters);
+
+    setSearchParams({
+      status,
+      mid: draftFilters.mid || "",
+      regional_head: draftFilters.regional_head || "",
+      page: 1,
+    });
   };
 
-
-
-  // const resetFilters = () => {
-  //   setFilters({
-  //     mid: "",
-  //     regional_head: "",
-  //   });
-  //   fetchData();
-  // };
   const resetFilters = () => {
-    setFilters({
-      mid: "",
-      regional_head: "",
-    });
-    setFilteredData(data);
+    const empty = { mid: "", regional_head: "" };
+
+    setDraftFilters(empty);
+    setAppliedFilters(empty);
+
+    setSearchParams({ status, page: 1 });
   };
 
   const handleEdit = (row) => {
@@ -1314,18 +1266,18 @@ const SCMList = () => {
   const handleUpdateClick = (row) => {
     navigate(`/update-meeting/${row.id}`);
   };
+
   const handleViewClick = (row) => {
     navigate("/view-content", {
       state: {
         rowData: row,
-        listState: {
-          filters,
+        listingState: {
+          appliedFilters,
           currentPage,
         },
       },
     });
   };
-
 
   const handleDelete = async (row) => {
     const confirmDelete = window.confirm(
@@ -1451,7 +1403,7 @@ const SCMList = () => {
           const cell = ws[cellAddress];
           if (cell && cell.v instanceof Date) {
             cell.t = "d";
-            cell.z = "dd-mmm-yyyy  hh:mm:ss";
+            cell.z = "dd-mmm-yyyy hh:mm:ss";
           }
         }
       }
@@ -1471,7 +1423,6 @@ const SCMList = () => {
     navigate(`/meeting-tracking/${row.id}`);
   };
 
-  // HOD/SI Remark Column
   const hodSiRemarkColumn = {
     name: "HOD/SI Remark",
     cell: (row) => {
@@ -1497,21 +1448,20 @@ const SCMList = () => {
             }
           );
 
-          // Instant UI update
           setData((prevData) =>
             prevData.map((item) =>
               item.id === row.id
                 ? {
-                  ...item,
-                  hod_observation: status,
-                  head_and_si_remark: comment,
-                }
+                    ...item,
+                    hod_observation: status,
+                    head_and_si_remark: comment,
+                  }
                 : item
             )
           );
 
           alert("Data Updated Successfully!");
-          fetchData(filters);
+          fetchData();
         } catch (error) {
           console.error("Update failed:", error);
           alert("Update failed. Please try again.");
@@ -1519,13 +1469,15 @@ const SCMList = () => {
       };
 
       return (
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "3px",
-          minWidth: "220px",
-          maxWidth: "220px"
-        }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "3px",
+            minWidth: "220px",
+            maxWidth: "220px",
+          }}
+        >
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
@@ -1536,7 +1488,7 @@ const SCMList = () => {
               minWidth: "75px",
               fontSize: "10px",
               textAlign: "left",
-              height: "28px"
+              height: "28px",
             }}
           >
             <option value="">Status</option>
@@ -1560,7 +1512,7 @@ const SCMList = () => {
               fontSize: "10px",
               textAlign: "left",
               fontFamily: "inherit",
-              lineHeight: "1.2"
+              lineHeight: "1.2",
             }}
           />
 
@@ -1574,7 +1526,7 @@ const SCMList = () => {
               width: "26px",
               height: "26px",
               minHeight: "26px",
-              p: 0
+              p: 0,
             }}
           >
             <UpdateIcon fontSize="small" />
@@ -1594,7 +1546,6 @@ const SCMList = () => {
     ),
   };
 
-  // Action Columns
   const viewColumn = {
     name: "View",
     cell: (row) => (
@@ -1603,11 +1554,7 @@ const SCMList = () => {
           color="info"
           size="small"
           onClick={() => handleViewClick(row)}
-          sx={{
-            minWidth: "32px",
-            width: "32px",
-            height: "32px"
-          }}
+          sx={{ minWidth: "32px", width: "32px", height: "32px" }}
         >
           <VisibilityIcon fontSize="small" />
         </IconButton>
@@ -1623,7 +1570,8 @@ const SCMList = () => {
   const editColumn = {
     name: "Edit",
     cell: (row) => {
-      const isClosed = row.hod_observation && row.hod_observation.toLowerCase() === "closed";
+      const isClosed =
+        row.hod_observation && row.hod_observation.toLowerCase() === "closed";
       if (isClosed) return null;
 
       return (
@@ -1632,11 +1580,7 @@ const SCMList = () => {
             color="primary"
             size="small"
             onClick={() => handleEdit(row)}
-            sx={{
-              minWidth: "32px",
-              width: "32px",
-              height: "32px"
-            }}
+            sx={{ minWidth: "32px", width: "32px", height: "32px" }}
           >
             <EditIcon fontSize="small" />
           </IconButton>
@@ -1657,7 +1601,8 @@ const SCMList = () => {
   const updateColumn = {
     name: "Update",
     cell: (row) => {
-      const isOpen = row.hod_observation && row.hod_observation.toLowerCase() === "open";
+      const isOpen =
+        row.hod_observation && row.hod_observation.toLowerCase() === "open";
       if (isOpen) return null;
 
       return (
@@ -1666,11 +1611,7 @@ const SCMList = () => {
             color="primary"
             size="small"
             onClick={() => handleUpdateClick(row)}
-            sx={{
-              minWidth: "32px",
-              width: "32px",
-              height: "32px"
-            }}
+            sx={{ minWidth: "32px", width: "32px", height: "32px" }}
           >
             <EditIcon fontSize="small" />
           </IconButton>
@@ -1696,11 +1637,7 @@ const SCMList = () => {
           color="error"
           size="small"
           onClick={() => handleDelete(row)}
-          sx={{
-            minWidth: "32px",
-            width: "32px",
-            height: "32px"
-          }}
+          sx={{ minWidth: "32px", width: "32px", height: "32px" }}
         >
           <DeleteIcon fontSize="small" />
         </IconButton>
@@ -1716,7 +1653,8 @@ const SCMList = () => {
   const trackColumn = {
     name: "Track",
     cell: (row) => {
-      const isReopen = row.hod_observation && row.hod_observation.toLowerCase() === "reopen";
+      const isReopen =
+        row.hod_observation && row.hod_observation.toLowerCase() === "reopen";
 
       return (
         <Tooltip title="Track Meeting">
@@ -1731,8 +1669,10 @@ const SCMList = () => {
               color: isReopen ? "#ffffff" : "#1976d2",
               fontWeight: isReopen ? "bold" : "normal",
               animation: isReopen ? "pulse 1.5s ease-in-out infinite" : "none",
-              '&:hover': {
-                backgroundColor: isReopen ? "#ff2222" : "rgba(25, 118, 210, 0.04)",
+              "&:hover": {
+                backgroundColor: isReopen
+                  ? "#ff2222"
+                  : "rgba(25, 118, 210, 0.04)",
                 transform: isReopen ? "scale(1.1)" : "scale(1.05)",
               },
               transition: "all 0.3s ease",
@@ -1750,9 +1690,7 @@ const SCMList = () => {
     center: true,
   };
 
-  // Define ALL columns (complete list)
   const allColumns = [
-    // 1. M.ID (Keep)
     {
       name: "M.ID",
       selector: (row) => row.id,
@@ -1761,7 +1699,6 @@ const SCMList = () => {
       minWidth: "80px",
       maxWidth: "80px",
     },
-    // 2. Region (Hide)
     {
       name: "Region",
       selector: (row) => row.region || "-",
@@ -1769,7 +1706,6 @@ const SCMList = () => {
       width: "120px",
       minWidth: "120px",
     },
-    // 3. Regional Head (Hide for non-admin)
     {
       name: "Regional Head",
       selector: (row) => row.regional_head || "-",
@@ -1782,7 +1718,6 @@ const SCMList = () => {
         userRole === "SI_Admin"
       ),
     },
-    // 4. State (Keep)
     {
       name: "State",
       selector: (row) => row.state || "-",
@@ -1790,15 +1725,13 @@ const SCMList = () => {
       width: "130px",
       minWidth: "130px",
     },
-    // 5. District (Keep)
     {
       name: "District",
-      selector: (row) => "All" || "-",
+      selector: (row) => "All",
       sortable: true,
       width: "130px",
       minWidth: "130px",
     },
-    // 6. Date Of Entry (Hide)
     {
       name: "Date Of Entry",
       selector: (row) => row.created_at,
@@ -1806,19 +1739,18 @@ const SCMList = () => {
       cell: (row) =>
         row.created_at
           ? new Date(row.created_at).toLocaleString("en-IN", {
-            timeZone: "Asia/Kolkata",
-            day: "2-digit",
-            month: "long",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-          })
+              timeZone: "Asia/Kolkata",
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })
           : "-",
       width: "180px",
       minWidth: "180px",
     },
-    // 7. Meeting Date (Keep)
     {
       name: "Meeting Date",
       selector: (row) => row.dateOfMeeting,
@@ -1826,15 +1758,14 @@ const SCMList = () => {
       cell: (row) =>
         row.dateOfMeeting
           ? new Date(row.dateOfMeeting).toLocaleDateString("en-GB", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })
           : "-",
       width: "140px",
       minWidth: "140px",
     },
-    // 8. Planned/Unplanned (Hide)
     {
       name: "Planned/Unplanned",
       selector: (row) => row.type || "-",
@@ -1842,7 +1773,6 @@ const SCMList = () => {
       width: "165px",
       minWidth: "165px",
     },
-    // 9. Online/Physical (Hide)
     {
       name: "Online/Physical",
       selector: (row) => row.mode || "-",
@@ -1850,7 +1780,6 @@ const SCMList = () => {
       width: "150px",
       minWidth: "150px",
     },
-    // 10. Meeting Place (Hide)
     {
       name: "Meeting Place",
       selector: (row) => row.placeOfMeeting || "-",
@@ -1858,23 +1787,23 @@ const SCMList = () => {
       width: "180px",
       minWidth: "180px",
     },
-    // 11. Activity Detail(s) (Hide)
     {
       name: "Activity Detail(s)",
       cell: (row) => {
         if (!row.activity_details) return "-";
-        const tempDiv = document.createElement('div');
+        const tempDiv = document.createElement("div");
         tempDiv.innerHTML = row.activity_details;
-        const plainText = tempDiv.textContent || tempDiv.innerText || '';
+        const plainText = tempDiv.textContent || tempDiv.innerText || "";
         return (
-          <div style={{
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            width: '100%',
-            fontSize: '12px',
-            textAlign: 'left'
-          }}
+          <div
+            style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              width: "100%",
+              fontSize: "12px",
+              textAlign: "left",
+            }}
             title={plainText}
           >
             {plainText}
@@ -1885,7 +1814,6 @@ const SCMList = () => {
       width: "200px",
       minWidth: "200px",
     },
-    // 12. Important Decision(s) (Hide)
     {
       name: "Important Decision(s)",
       selector: (row) => row.important_decision || "-",
@@ -1893,23 +1821,23 @@ const SCMList = () => {
       width: "180px",
       minWidth: "180px",
     },
-    // 13. Status Update(s) (Hide)
     {
       name: "Status Update(s)",
       cell: (row) => {
         if (!row.status_update) return "-";
-        const tempDiv = document.createElement('div');
+        const tempDiv = document.createElement("div");
         tempDiv.innerHTML = row.status_update;
-        const plainText = tempDiv.textContent || tempDiv.innerText || '';
+        const plainText = tempDiv.textContent || tempDiv.innerText || "";
         return (
-          <div style={{
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            width: '100%',
-            fontSize: '12px',
-            textAlign: 'left'
-          }}
+          <div
+            style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              width: "100%",
+              fontSize: "12px",
+              textAlign: "left",
+            }}
             title={plainText}
           >
             {plainText}
@@ -1920,7 +1848,6 @@ const SCMList = () => {
       width: "180px",
       minWidth: "180px",
     },
-    // 14. HOD Remark (Hide)
     {
       name: "HOD Remark",
       selector: (row) => row.head_and_si_remark || "-",
@@ -1928,7 +1855,6 @@ const SCMList = () => {
       width: "130px",
       minWidth: "130px",
     },
-    // 15. HOD Observation(s) (Keep)
     {
       name: "HOD Observation(s)",
       selector: (row) => row.hod_observation,
@@ -1937,7 +1863,8 @@ const SCMList = () => {
       minWidth: "150px",
       maxWidth: "150px",
       cell: (row) => {
-        const isReopen = row.hod_observation && row.hod_observation.toLowerCase() === "reopen";
+        const isReopen =
+          row.hod_observation && row.hod_observation.toLowerCase() === "reopen";
 
         return (
           <div
@@ -1947,14 +1874,14 @@ const SCMList = () => {
               fontWeight: isReopen ? "bold" : "normal",
               textTransform: isReopen ? "uppercase" : "none",
               animation: isReopen ? "pulse 1.5s ease-in-out infinite" : "none",
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              display: 'block',
-              width: '100%',
-              textAlign: 'left',
-              padding: '4px 0',
-              fontSize: '12px'
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "block",
+              width: "100%",
+              textAlign: "left",
+              padding: "4px 0",
+              fontSize: "12px",
             }}
           >
             {row.hod_observation || "-"}
@@ -1962,7 +1889,6 @@ const SCMList = () => {
         );
       },
     },
-    // 16. URL (Hide)
     {
       name: "URL",
       cell: (row) =>
@@ -1991,23 +1917,15 @@ const SCMList = () => {
       maxWidth: "70px",
       center: true,
     },
-    // 17. View Column (Keep)
     viewColumn,
-    // 18. Edit Column (Hide)
     editColumn,
-    // 19. Update Column (Hide)
     updateColumn,
-    // 20. Delete Column (Keep)
     deleteColumn,
-    // 21. Track Column (Keep)
     trackColumn,
-    // 22. HOD/SI Remark Column (Keep for admin)
     hodSiRemarkColumn,
   ].filter(Boolean);
 
-  // Define DEFAULT view columns (only columns marked as "Keep")
-  const defaultViewColumns = allColumns.map(col => {
-    // Hide columns that are marked as "Hide" in default view
+  const defaultViewColumns = allColumns.map((col) => {
     const hideColumns = [
       "Region",
       "Date Of Entry",
@@ -2020,19 +1938,15 @@ const SCMList = () => {
       "HOD Remark",
       "URL",
       "Edit",
-      "Update"
+      "Update",
     ];
 
     if (hideColumns.includes(col.name)) {
-      return {
-        ...col,
-        omit: true
-      };
+      return { ...col, omit: true };
     }
     return col;
   });
 
-  // Final columns based on view mode
   const columns = showAllColumns ? allColumns : defaultViewColumns;
 
   const contextActions = (
@@ -2052,6 +1966,11 @@ const SCMList = () => {
     setShowAllColumns(!showAllColumns);
   };
 
+  const handleBack = () => {
+    isInternalNav.current = true;
+    navigate(`/scm-lists?status=${status}`);
+  };
+
   return (
     <div className="AddMeeting mt-6">
       <div className="container-fluid">
@@ -2059,14 +1978,18 @@ const SCMList = () => {
           <div className="col-12">
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Button
-                onClick={() => navigate(-1)}
+                onClick={handleBack}
                 startIcon={<ArrowBackIcon />}
                 sx={{ mr: 2 }}
               >
-                Back
+                {/* Back */}
               </Button>
-              <Typography variant="h4" component="h1" sx={{ textAlign: 'center', width: '100%' }}>
-                SCM Meetings - {status.charAt(0).toUpperCase() + status.slice(1)}
+              <Typography
+                variant="h4"
+                component="h1"
+                sx={{ textAlign: "center", width: "100%" }}
+              >
+                SCM Meetings
               </Typography>
 
               {activeFiltersCount > 0 && (
@@ -2078,7 +2001,13 @@ const SCMList = () => {
                 />
               )}
 
-              <Box sx={{ ml: "auto" }}>
+              <Box
+                sx={{
+                  ml: "auto",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
                 <Button
                   variant={showAllColumns ? "contained" : "outlined"}
                   color="primary"
@@ -2090,7 +2019,6 @@ const SCMList = () => {
               </Box>
             </Box>
 
-            {/* Filter Section */}
             <Box
               sx={{
                 mb: 3,
@@ -2104,13 +2032,13 @@ const SCMList = () => {
                 <Grid item xs={12} sm={6} md={2}>
                   <Autocomplete
                     options={filterOptions.mids}
-                    value={filters.mid || null}
-                    onChange={(event, newValue) => {
-                      setFilters((prev) => ({
+                    value={draftFilters.mid || null}
+                    onChange={(e, val) =>
+                      setDraftFilters((prev) => ({
                         ...prev,
-                        mid: newValue || "",
-                      }));
-                    }}
+                        mid: val || "",
+                      }))
+                    }
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -2126,25 +2054,31 @@ const SCMList = () => {
                 {(userRole === "Admin" ||
                   userRole === "Vertical-Head" ||
                   userRole === "SI_Admin") && (
-                    <Grid item xs={12} sm={6} md={3}>
-                      <FormControl fullWidth size="small">
-                        <InputLabel>Regional Head</InputLabel>
-                        <Select
-                          name="regional_head"
-                          value={filters.regional_head}
-                          onChange={handleFilterChange}
-                          label="Regional Head"
-                        >
-                          <MenuItem value="">All Regional Heads</MenuItem>
-                          {regionalHead.map((head) => (
-                            <MenuItem key={head} value={head}>
-                              {head}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                  )}
+                  <Grid item xs={12} sm={6} md={3}>
+                    <FormControl fullWidth size="small">
+                      <InputLabel>Regional Head</InputLabel>
+                      <Select
+                        name="regional_head"
+                        value={draftFilters.regional_head}
+                        onChange={(e) =>
+                          setDraftFilters((prev) => ({
+                            ...prev,
+                            regional_head: e.target.value,
+                            mid: "",
+                          }))
+                        }
+                        label="Regional Head"
+                      >
+                        <MenuItem value="">All Regional Heads</MenuItem>
+                        {regionalHead.map((head) => (
+                          <MenuItem key={head} value={head}>
+                            {head}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                )}
 
                 <Grid item xs={12} sm={6} md={2}>
                   <Button
@@ -2174,7 +2108,7 @@ const SCMList = () => {
                 <Grid item xs={12} sm={6} md={2}>
                   <Button
                     variant="outlined"
-                    onClick={() => fetchData(filters)}
+                    onClick={() => fetchData()}
                     fullWidth
                     startIcon={<RefreshIcon />}
                     disabled={loading}
@@ -2202,7 +2136,6 @@ const SCMList = () => {
               </Grid>
             </Box>
 
-            {/* Data Table */}
             {error ? (
               <Box
                 sx={{
@@ -2217,7 +2150,7 @@ const SCMList = () => {
                 <Button
                   variant="outlined"
                   color="error"
-                  onClick={() => fetchData(filters)}
+                  onClick={() => fetchData()}
                   sx={{ mt: 2 }}
                 >
                   Retry
@@ -2244,25 +2177,35 @@ const SCMList = () => {
                   }}
                 >
                   <Typography variant="subtitle1">
-                    Showing {data.length} records
+                    Showing {filteredData.length} records
                     {showAllColumns ? " (All Columns)" : " (Default View)"}
                   </Typography>
                   {selectedRows.length > 0 && contextActions}
                 </Box>
 
-                <Box sx={{
-                  border: "1px solid #e0e0e0",
-                  borderRadius: 1,
-                  overflow: "hidden",
-                }}>
+                <Box
+                  sx={{
+                    border: "1px solid #e0e0e0",
+                    borderRadius: 1,
+                    overflow: "hidden",
+                  }}
+                >
                   <DataTable
-                    // key={currentPage}
+                    key={currentPage}
                     columns={columns}
-                    data={filteredData}   // ✅ FIX
+                    data={filteredData}
                     pagination
                     paginationServer={false}
                     paginationDefaultPage={currentPage}
-                    onChangePage={(page) => setCurrentPage(page)}
+                    onChangePage={(page) => {
+                      setCurrentPage(page);
+                      setSearchParams({
+                        status,
+                        mid: appliedFilters.mid || "",
+                        regional_head: appliedFilters.regional_head || "",
+                        page,
+                      });
+                    }}
                     highlightOnHover
                     progressPending={loading}
                     paginationPerPage={10}
@@ -2275,7 +2218,7 @@ const SCMList = () => {
                     customStyles={{
                       table: {
                         style: {
-                          minWidth: showAllColumns ? 'fit-content' : '100%',
+                          minWidth: showAllColumns ? "fit-content" : "100%",
                         },
                       },
                       headCells: {
@@ -2305,15 +2248,15 @@ const SCMList = () => {
 
                 <style jsx global>{`
                   @keyframes pulse {
-                    0% { 
+                    0% {
                       opacity: 1;
                       box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
                     }
-                    50% { 
+                    50% {
                       opacity: 0.8;
                       box-shadow: 0 0 0 10px rgba(106, 148, 227, 0);
                     }
-                    100% { 
+                    100% {
                       opacity: 1;
                       box-shadow: 0 0 0 0 rgba(53, 154, 212, 0);
                     }

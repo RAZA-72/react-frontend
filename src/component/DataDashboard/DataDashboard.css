@@ -1,56 +1,194 @@
-/* ===== MULTI STEP – ENTERPRISE STYLE ===== */
+/* =====================================
+   MULTI STEP – CLEAN ENTERPRISE VERSION
+===================================== */
 
 .react-multi-step {
-  margin: 24px 0 36px;
+  margin: 12px 0 18px;
 }
 
-/* Step labels */
-.react-multi-step li {
-  font-size: 13px;
-  font-weight: 500;
-  color: #9ca3af; /* muted */
-  letter-spacing: 0.2px;
+/* ================================
+   GRID LAYOUT
+================================ */
+ol {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
+  gap: 10px !important;
+  padding: 0 !important;
+  margin: 14px 0 20px !important;
 }
 
-/* Active step text */
-.react-multi-step li.active {
-  color: #111827;
-  font-weight: 600;
+/* ================================
+   STEP CARD – BASE
+================================ */
+ol > li {
+  list-style: none !important;
+  background: #ffffff !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 8px !important;
+
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 0 10px !important;
+  position: relative !important;
+  cursor: pointer !important;
+
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #9ca3af !important;
+
+  transition: all 0.25s ease !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
 }
 
-/* Step circles */
-.react-multi-step li::before {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #e5e7eb;
-  border: 2px solid #d1d5db;
+/* Label */
+ol > li span {
+  width: 100% !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  padding: 0 20px 0 6px !important;
+  z-index: 2 !important;
 }
 
-/* Completed step */
-.react-multi-step li.done::before {
-  background: #22c55e;       /* subtle green */
-  border-color: #22c55e;
+/* ================================
+   ACTIVE STEP (CLICKED)
+================================ */
+ol > li[aria-current="step"] {
+  color: #111827 !important;
+  background: #ffffff !important;
+  border-color: #2563eb !important;
+
+  box-shadow:
+    0 0 0 2px rgba(37, 99, 235, 0.15),
+    0 6px 14px rgba(37, 99, 235, 0.25) !important;
+
+  transform: scale(1.02) !important;
 }
 
-/* Active step circle */
-.react-multi-step li.active::before {
-  background: #2563eb;
-  border-color: #2563eb;
+/* Top active indicator bar */
+ol > li[aria-current="step"]::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 3px !important;
+
+  background: linear-gradient(
+    90deg,
+    #2563eb 0%,
+    #39b1ac 50%,
+    #2563eb 100%
+  ) !important;
+
+  border-radius: 8px 8px 0 0 !important;
 }
 
-/* Connecting line */
-.react-multi-step li::after {
-  height: 2px;
-  background: #e5e7eb;
+/* No checkmark on active */
+ol > li[aria-current="step"]::after {
+  display: none !important;
 }
 
-/* Line till completed */
-.react-multi-step li.done::after {
-  background: #22c55e;
+/* ================================
+   COMPLETED STEP
+================================ */
+ol > li[aria-current="false"] {
+  color: #0f172a !important;
+  border-color: #39b1ac !important;
+  background: linear-gradient(135deg, #e6f9f7, #ccf3f1) !important;
 }
 
-/* Line till active */
-.react-multi-step li.active::after {
-  background: #2563eb;
+/* Completed checkmark – NO OVERLAP */
+ol > li[aria-current="false"]::after {
+  content: "✓" !important;
+  position: absolute !important;
+  top: 6px !important;
+  right: 6px !important;
+
+  width: 16px !important;
+  height: 16px !important;
+
+  border-radius: 50% !important;
+  background: #39b1ac !important;
+  color: #ffffff !important;
+
+  font-size: 10px !important;
+  font-weight: 700 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  z-index: 3 !important;
+}
+
+/* ================================
+   UPCOMING STEP
+================================ */
+ol > li[aria-current="true"] {
+  background: #fafafa !important;
+  color: #d1d5db !important;
+  border-color: #e5e7eb !important;
+  opacity: 0.6 !important;
+}
+
+/* ================================
+   HOVER EFFECTS
+================================ */
+ol > li:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1) !important;
+}
+
+ol > li[aria-current="step"]:hover {
+  box-shadow:
+    0 8px 18px rgba(37, 99, 235, 0.35),
+    0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+}
+
+ol > li[aria-current="false"]:hover {
+  box-shadow: 0 6px 14px rgba(57, 177, 172, 0.35) !important;
+}
+
+/* ================================
+   MOBILE
+================================ */
+@media (max-width: 640px) {
+  ol {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  ol > li {
+    font-size: 11px !important;
+    height: 38px !important;
+  }
+
+  ol > li span {
+    padding-right: 18px !important;
+  }
+
+  ol > li[aria-current="false"]::after {
+    width: 14px !important;
+    height: 14px !important;
+    font-size: 9px !important;
+  }
+}
+
+/* ================================
+   REDUCED MOTION
+================================ */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }

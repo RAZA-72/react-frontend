@@ -93,10 +93,10 @@ const EBMonthlyEnquirynhitMemberGp = ({ ebMemberInquiryGData }) => {
       ? ebMemberInquiryGData.data.hit_volumes_proportion
       : fallbackSeries[2].data;
 
-  // Scale hit volume proportion % into actual numbers for the chart line data
-  const hitVolumesProportion = hitVolumesProportionRaw.map((val, index) => {
+  // FIXED: Just extract the numeric percentage values - no scaling needed
+  const hitVolumesProportion = hitVolumesProportionRaw.map((val) => {
     const percent = typeof val === "string" ? parseFloat(val.replace("%", "")) : val;
-    return Math.round((percent / 100) * totalEnquiries[index]);
+    return percent;
   });
 
   const series = [
@@ -120,8 +120,7 @@ const EBMonthlyEnquirynhitMemberGp = ({ ebMemberInquiryGData }) => {
   const options = {
     chart: {
       type: "line",
-      height: 450,
-
+      height: 500,
       toolbar: {
         show: true,
         tools: {
@@ -139,7 +138,7 @@ const EBMonthlyEnquirynhitMemberGp = ({ ebMemberInquiryGData }) => {
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: "55%",
+        columnWidth: "45%",
         endingShape: "rounded",
         dataLabels: {
           position: "top",
@@ -148,37 +147,37 @@ const EBMonthlyEnquirynhitMemberGp = ({ ebMemberInquiryGData }) => {
     },
     dataLabels: {
       enabled: true,
-      enabledOnSeries: [0, 1, 2],
       formatter: function (val, opts) {
         const seriesIndex = opts.seriesIndex;
         if (seriesIndex === 2) {
+          // Return the original percentage string with % symbol
           return hitVolumesProportionRaw[opts.dataPointIndex] || "";
         }
         return val === 0 ? "" : number_format(val);
       },
       style: {
-        fontSize: "12px",
+        fontSize: "11px",
         fontFamily: "Arial, sans-serif",
         fontWeight: "600",
         colors: ["#000"],
       },
-      offsetY: -25,
+      offsetY: -20,
       background: {
         enabled: false,
       },
     },
     stroke: {
       show: true,
-      width: [0, 0, 3],
-      curve: "straight",
+      width: [0, 0, 4],
+      curve: "smooth",
     },
     markers: {
-      size: [0, 0, 3],
+      size: [0, 0, 6],
       colors: ["#39B1AC", "#2B60AD", "#B853A0"],
-      strokeColors: "#B853A0",
-      strokeWidth: 2,
+      strokeColors: "#fff",
+      strokeWidth: 3,
       hover: {
-        size: 10,
+        size: 8,
       },
     },
     title: {
@@ -211,17 +210,45 @@ const EBMonthlyEnquirynhitMemberGp = ({ ebMemberInquiryGData }) => {
         color: "#d1d5db",
       },
     },
-    yaxis: {
-      labels: {
-        show: false,
+    yaxis: [
+      {
+        // Primary Y-axis for bars
+        seriesName: "Total Enquiries",
+        labels: {
+          show: false,
+        },
+        axisTicks: {
+          show: false,
+        },
+        axisBorder: {
+          show: false,
+        },
       },
-      axisTicks: {
+      {
+        // Secondary Y-axis for second bar series
+        seriesName: "Total Hit Volumes",
         show: false,
+        labels: {
+          show: false,
+        },
       },
-      axisBorder: {
-        show: false,
+      {
+        // Third Y-axis for percentage line (0-100 scale)
+        opposite: true,
+        seriesName: "Hit Volumes Proportion",
+        min: 0,
+        max: 100,
+        labels: {
+          show: false,
+        },
+        axisTicks: {
+          show: false,
+        },
+        axisBorder: {
+          show: false,
+        },
       },
-    },
+    ],
     legend: {
       position: "bottom",
       horizontalAlign: "center",
@@ -245,6 +272,7 @@ const EBMonthlyEnquirynhitMemberGp = ({ ebMemberInquiryGData }) => {
         formatter: function (val, opts) {
           const seriesIndex = opts.seriesIndex;
           if (seriesIndex === 2) {
+            // Show percentage in tooltip
             return hitVolumesProportionRaw[opts.dataPointIndex] || "";
           }
           return number_format(val);
@@ -256,10 +284,10 @@ const EBMonthlyEnquirynhitMemberGp = ({ ebMemberInquiryGData }) => {
       show: false,
       strokeDashArray: 0,
       padding: {
-        top: 0,
-        right: 20,
-        bottom: 0,
-        left: 10,
+        top: 30,
+        right: 30,
+        bottom: 10,
+        left: 20,
       },
     },
     fill: {
@@ -278,7 +306,7 @@ const EBMonthlyEnquirynhitMemberGp = ({ ebMemberInquiryGData }) => {
     >
       <CardActionArea>
         <CardContent>
-          <ReactApexChart options={options} series={series} type="line" height={450} />
+          <ReactApexChart options={options} series={series} type="line" height={500} />
         </CardContent>
       </CardActionArea>
     </Card>

@@ -1116,16 +1116,16 @@ const CriticalEventList = () => {
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
-if (location.state && location.state.filters) {
-  setFilters(location.state.filters);
-  fetchData(location.state.filters);
-}
+    if (location.state && location.state.filters) {
+      setFilters(location.state.filters);
+      fetchData(location.state.filters);
+    }
 
-if (location.state && location.state.currentPage) {
-  setCurrentPage(location.state.currentPage);
-}
+    if (location.state && location.state.currentPage) {
+      setCurrentPage(location.state.currentPage);
+    }
 
-}, []);
+  }, []);
 
   const searchParams = new URLSearchParams(location.search);
   const status = searchParams.get("status") || ""; // "open" or "closed"
@@ -1275,15 +1275,15 @@ if (location.state && location.state.currentPage) {
   };
 
   // Initial data fetch
-useEffect(() => {
-  if (location.state && location.state.filters) {
-    setFilters(location.state.filters);
-    setCurrentPage(location.state.currentPage || 1);
-    fetchData(location.state.filters);
-  } else {
-    fetchData();
-  }
-}, []);
+  useEffect(() => {
+    if (location.state && location.state.filters) {
+      setFilters(location.state.filters);
+      setCurrentPage(location.state.currentPage || 1);
+      fetchData(location.state.filters);
+    } else {
+      fetchData();
+    }
+  }, []);
 
 
   //fetching regional head data
@@ -1395,18 +1395,18 @@ useEffect(() => {
   };
 
   const toProperCase = (text = "") => {
-  if (!text) return "All Months";
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-};
+    if (!text) return "All Months";
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  };
 
-const formatFY = (value = "") => {
-  if (!value) return "All Years";
-  return value.startsWith("fy-")
-    ? `FY ${value.split("-")[1]}`
-    : value;
-};
+  const formatFY = (value = "") => {
+    if (!value) return "All Years";
+    return value.startsWith("fy-")
+      ? `FY ${value.split("-")[1]}`
+      : value;
+  };
 
-const years = ["fy-23", "fy-24", "fy-25", "fy-26"];
+  const years = ["fy-23", "fy-24", "fy-25", "fy-26"];
 
 
   const handleBulkDelete = async () => {
@@ -2429,12 +2429,12 @@ const years = ["fy-23", "fy-24", "fy-25", "fy-26"];
                       label="Year"
                     >
                       <MenuItem value="">All Years</MenuItem>
-                     
+
                       {filterOptions.years.map((year) => (
-  <MenuItem key={year} value={year}>
-    {formatFY(year)}   {/* ✅ FIX */}
-  </MenuItem>
-))}
+                        <MenuItem key={year} value={year}>
+                          {formatFY(year)}   {/* ✅ FIX */}
+                        </MenuItem>
+                      ))}
 
                     </Select>
                   </FormControl>
@@ -2450,11 +2450,11 @@ const years = ["fy-23", "fy-24", "fy-25", "fy-26"];
                       label="Start Month"
                     >
                       <MenuItem value="">All Months</MenuItem>
-                 {filterOptions.months.map((month) => (
-  <MenuItem key={month} value={month}>
-    {toProperCase(month)}   {/* ✅ FIX */}
-  </MenuItem>
-))}
+                      {filterOptions.months.map((month) => (
+                        <MenuItem key={month} value={month}>
+                          {toProperCase(month)}   {/* ✅ FIX */}
+                        </MenuItem>
+                      ))}
 
                     </Select>
                   </FormControl>
@@ -2470,11 +2470,11 @@ const years = ["fy-23", "fy-24", "fy-25", "fy-26"];
                       label="End Month"
                     >
                       <MenuItem value="">All Months</MenuItem>
-                   {filterOptions.months.map((month) => (
-  <MenuItem key={month} value={month}>
-    {toProperCase(month)}   {/* ✅ FIX */}
-  </MenuItem>
-))}
+                      {filterOptions.months.map((month) => (
+                        <MenuItem key={month} value={month}>
+                          {toProperCase(month)}   {/* ✅ FIX */}
+                        </MenuItem>
+                      ))}
 
                     </Select>
                   </FormControl>
@@ -2654,7 +2654,7 @@ const years = ["fy-23", "fy-24", "fy-25", "fy-26"];
                 }}>
                   <DataTable
                     key={currentPage}   // 🔥 VERY IMPORTANT
-                    
+
 
                     columns={columns}
                     data={data}

@@ -1,9 +1,18 @@
-.blue-row th{
-    background-color: #1f4a90;
-    color: white;
+/* Equity.css - Minimal CSS as most styling is inline */
+
+/* Remove any default margins/padding on the form wrapper */
+form {
+  margin: 0;
+  padding: 0;
 }
 
-.pink-row th {
-    text-align: left;
-    background-color:#fbe5fd;
+/* Smooth transitions for interactive elements */
+input:focus,
+select:focus {
+  transition: all 0.2s ease;
+}
+
+/* Ensure proper box sizing */
+* {
+  box-sizing: border-box;
 }

@@ -844,8 +844,1080 @@
 // };
 
 // export default DFMList;
+  // import React, { useState, useEffect } from "react";
+  // import { useLocation, useNavigate } from "react-router-dom";
+  // import axios from "axios";
+  // import DataTable from "react-data-table-component";
+  // import {
+  //   Button,
+  //   MenuItem,
+  //   Select,
+  //   FormControl,
+  //   InputLabel,
+  //   Box,
+  //   Grid,
+  //   Chip,
+  //   CircularProgress,
+  //   Typography,
+  //   IconButton,
+  //   Tooltip,
+  // } from "@mui/material";
+  // import DeleteIcon from "@mui/icons-material/Delete";
+  // import EditIcon from "@mui/icons-material/Edit";
+  // import DownloadIcon from "@mui/icons-material/Download";
+  // import * as XLSX from "xlsx";
+  // import InfoIcon from "@mui/icons-material/Info";
+  // import UpdateIcon from "@mui/icons-material/Update";
+  // import VisibilityIcon from "@mui/icons-material/Visibility";
+  // import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+  // import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+  // import FilterAltIcon from "@mui/icons-material/FilterAlt";
+  // import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
+  // import RefreshIcon from "@mui/icons-material/Refresh";
+  // import TableViewIcon from "@mui/icons-material/TableView";
+
+  // const DFMList = () => {
+  //   const user = localStorage.getItem("user");
+  //   const userData = JSON.parse(user);
+  //   const userName = userData.data.user.name || "";
+  //   const userRole = userData.data.role_name || "";
+  //   const userEmail = userData.data.user.email;
+
+  //   const [regionalHead, setRegionalHead] = useState([]);
+
+  //   const navigate = useNavigate();
+  //   const location = useLocation();
+  //   const searchParams = new URLSearchParams(location.search);
+  //   const status = searchParams.get("status") || ""; // "open" or "closed"
+
+  //   const [data, setData] = useState([]);
+  //   const [filters, setFilters] = useState({
+  //     regional_head: "",
+  //   });
+  //   const [loading, setLoading] = useState(true);
+  //   const [selectedRows, setSelectedRows] = useState([]);
+  //   const [toggleCleared, setToggleCleared] = useState(false);
+  //   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
+  //   const [error, setError] = useState(null);
+  //   const [showAllColumns, setShowAllColumns] = useState(false);
+
+  //   // Count active filters
+  //   useEffect(() => {
+  //     const count = Object.values(filters).filter((val) => val !== "").length;
+  //     setActiveFiltersCount(count);
+  //   }, [filters]);
+
+  //   const fetchData = async (params = {}) => {
+  //     setLoading(true);
+  //     setError(null);
+  //     try {
+  //       const baseParams = {
+  //         user_role: userRole,
+  //         username: userName,
+  //         activity_type: "DFM",
+  //       };
+
+  //       const response = await axios.get(
+  //         "https://api.mfinindia.org/api/auth/meetings/count/activity_type",
+  //         {
+  //           params: { ...baseParams, ...params },
+  //         }
+  //       );
+
+  //       // Filter data based on status (case-insensitive)
+  //       const statusFilteredData = response.data.data.filter((item) => {
+  //         if (!item.hod_observation) return false;
+  //         const obs = item.hod_observation.toLowerCase();
+  //         const statusLower = status.toLowerCase();
+  //         return obs === statusLower;
+  //       });
+
+  //       console.log("DFM Filtered Data:", statusFilteredData);
+  //       setData(statusFilteredData);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //       setError("Failed to load data. Please try again.");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   // Initial data fetch
+  //   useEffect(() => {
+  //     fetchData();
+  //   }, [status]);
+
+  //   //fetching regional head data
+  //   useEffect(() => {
+  //     const fetchRegionalHead = async () => {
+  //       try {
+  //         const response = await axios.get(
+  //           "https://api.mfinindia.org/api/auth/meetings/user/getRole18Users"
+  //         );
+  //         console.log("regionalhead", response.data.names);
+  //         setRegionalHead(response.data.names);
+  //       } catch (err) {
+  //         console.log("regionalhead-err", err.response);
+  //       }
+  //     };
+
+  //     fetchRegionalHead();
+  //   }, []);
+
+  //   const handleFilterChange = (e) => {
+  //     const { name, value } = e.target;
+  //     setFilters((prev) => ({
+  //       ...prev,
+  //       [name]: value,
+  //     }));
+  //   };
+
+  //   const applyFilters = () => {
+  //     const filterParams = Object.fromEntries(
+  //       Object.entries(filters).filter(([_, v]) => v !== "")
+  //     );
+  //     fetchData(filterParams);
+  //   };
+
+  //   const resetFilters = () => {
+  //     setFilters({
+  //       regional_head: "",
+  //     });
+  //     fetchData();
+  //   };
+
+  //   const handleEdit = (row) => {
+  //     navigate(`/edit-meeting/${row.id}`);
+  //   };
+
+  //   const handleUpdateClick = (row) => {
+  //     navigate(`/update-meeting/${row.id}`);
+  //   };
+
+  //   const handleViewClick = (row) => {
+  //     navigate("/view-content", { state: { rowData: row } });
+  //   };
+
+  //   const handleDelete = async (row) => {
+  //     const confirmDelete = window.confirm(
+  //       "Are you sure you want to delete this? This action cannot be undone."
+  //     );
+  //     if (confirmDelete) {
+  //       try {
+  //         await axios.delete(
+  //           `https://api.mfinindia.org/api/auth/meetings/delete/${row.id}`
+  //         );
+  //         setData((prev) => prev.filter((item) => item.id !== row.id));
+  //       } catch (error) {
+  //         console.error("Error deleting meeting:", error);
+  //         alert("Failed to delete. Please try again.");
+  //       }
+  //     }
+  //   };
+
+  //   const handleBulkDelete = async () => {
+  //     if (selectedRows.length === 0) return;
+
+  //     const confirmDelete = window.confirm(
+  //       `Are you sure you want to delete ${selectedRows.length} selected items?`
+  //     );
+  //     if (!confirmDelete) return;
+
+  //     try {
+  //       await Promise.all(
+  //         selectedRows.map((row) =>
+  //           axios.delete(
+  //             `https://api.mfinindia.org/api/auth/meetings/delete/${row.id}`
+  //           )
+  //         )
+  //       );
+  //       setData((prev) =>
+  //         prev.filter((item) => !selectedRows.some((row) => row.id === item.id))
+  //       );
+  //       setSelectedRows([]);
+  //       setToggleCleared(!toggleCleared);
+  //     } catch (error) {
+  //       console.error("Error deleting meetings:", error);
+  //       alert("Failed to delete some items. Please try again.");
+  //     }
+  //   };
+
+  //   const exportToExcel = () => {
+  //     if (data.length === 0) {
+  //       alert("No data to export");
+  //       return;
+  //     }
+
+  //     const columnsToExclude = ["updated_at"];
+
+  //     const htmlToText = (html) => {
+  //       if (!html) return "";
+  //       const temp = document.createElement("div");
+  //       temp.innerHTML = html;
+  //       return temp.textContent || temp.innerText || "";
+  //     };
+
+  //     const parseSafeDateTime = (value) => {
+  //       if (!value) return null;
+  //       const d = new Date(value);
+  //       if (!isNaN(d)) return d;
+  //       return null;
+  //     };
+
+  //     const exportData = data.map((item) => {
+  //       const newItem = { ...item };
+  //       columnsToExclude.forEach((col) => delete newItem[col]);
+
+  //       newItem.dateOfMeeting = parseSafeDateTime(newItem.dateOfMeeting);
+
+  //       if (newItem.activity_details) {
+  //         newItem.activity_details = htmlToText(newItem.activity_details);
+  //       }
+  //       if (newItem.status_update) {
+  //         newItem.status_update = htmlToText(newItem.status_update);
+  //       }
+
+  //       if (newItem.hasOwnProperty("head_and_si_remark")) {
+  //         newItem["Head_SI_Remark"] = newItem["head_and_si_remark"];
+  //         delete newItem["head_and_si_remark"];
+  //       }
+
+  //       let dateOfEntry = null;
+  //       if (newItem.hasOwnProperty("created_at")) {
+  //         dateOfEntry = parseSafeDateTime(newItem["created_at"]);
+  //         delete newItem["created_at"];
+  //       }
+
+  //       const reorderedItem = {};
+  //       for (const key in newItem) {
+  //         if (key === "dateOfMeeting" && dateOfEntry) {
+  //           reorderedItem["dateOfEntry"] = dateOfEntry;
+  //         }
+  //         reorderedItem[key] = newItem[key];
+
+  //         if (
+  //           key === "status_update" &&
+  //           newItem["Head_SI_Remark"] !== undefined
+  //         ) {
+  //           reorderedItem["Head_SI_Remark"] = newItem["Head_SI_Remark"];
+  //         }
+  //       }
+
+  //       if (!newItem.dateOfMeeting && dateOfEntry) {
+  //         reorderedItem["dateOfEntry"] = dateOfEntry;
+  //       }
+
+  //       return reorderedItem;
+  //     });
+
+  //     const ws = XLSX.utils.json_to_sheet(exportData);
+
+  //     const headers = Object.keys(exportData[0]);
+  //     ["dateOfMeeting", "dateOfEntry"].forEach((colName) => {
+  //       const colIndex = headers.indexOf(colName);
+  //       if (colIndex !== -1) {
+  //         const range = XLSX.utils.decode_range(ws["!ref"]);
+  //         for (let R = range.s.r + 1; R <= range.e.r; R++) {
+  //           const cellAddress = XLSX.utils.encode_cell({ r: R, c: colIndex });
+  //           const cell = ws[cellAddress];
+  //           if (cell && cell.v instanceof Date) {
+  //             cell.t = "d";
+  //             cell.z = "dd-mmm-yyyy  hh:mm:ss";
+  //           }
+  //         }
+  //       }
+  //     });
+
+  //     const wb = XLSX.utils.book_new();
+  //     XLSX.utils.book_append_sheet(wb, ws, "DFM");
+
+  //     const randomNum = Math.floor(Math.random() * 9000) + 1000;
+  //     const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  //     const filename = `DFM_${timestamp}_${randomNum}.xlsx`;
+
+  //     XLSX.writeFile(wb, filename);
+  //   };
+
+  //   const handleInfoClick = (row) => {
+  //     navigate(`/meeting-tracking/${row.id}`);
+  //   };
+
+  //   // HOD/SI Remark Column
+  //   const hodSiRemarkColumn = {
+  //     name: "HOD/SI Remark",
+  //     cell: (row) => {
+  //       const [comment, setComment] = useState(row.comment || "");
+  //       const [status, setStatus] = useState(row.status || "");
+
+  //       const handleUpdate = async () => {
+  //         if (!status) {
+  //           alert("Please select a status");
+  //           return;
+  //         }
+  //         try {
+  //           await axios.post(
+  //             `https://api.mfinindia.org/api/auth/meetings/archmeeting_update_new/${row.id}`,
+  //             {
+  //               id: row.id,
+  //               regional_head: row.regional_head,
+  //               hodObservation: status,
+  //               statusUpdate: comment,
+  //               loginemail: userEmail,
+  //               username: userName,
+  //               activity_type: row.activity_type,
+  //             }
+  //           );
+  //           alert("Data Updated Successfully!");
+  //           fetchData();
+  //         } catch (error) {
+  //           console.error("Update failed:", error);
+  //           alert("Update failed. Please try again.");
+  //         }
+  //       };
+
+  //       return (
+  //         <div style={{ 
+  //           display: "flex", 
+  //           alignItems: "center", 
+  //           gap: "3px", 
+  //           minWidth: "220px",
+  //           maxWidth: "220px"
+  //         }}>
+  //           <select
+  //             value={status}
+  //             onChange={(e) => setStatus(e.target.value)}
+  //             style={{
+  //               padding: "3px 6px",
+  //               borderRadius: "3px",
+  //               border: "1px solid #ccc",
+  //               minWidth: "75px",
+  //               fontSize: "10px",
+  //               textAlign: "left",
+  //               height: "28px"
+  //             }}
+  //           >
+  //             <option value="">Status</option>
+  //             <option value="Open">Open</option>
+  //             <option value="Closed">Closed</option>
+  //           </select>
+
+  //           <textarea
+  //             value={comment}
+  //             onChange={(e) => setComment(e.target.value)}
+  //             placeholder="Comments..."
+  //             style={{
+  //               padding: "3px 5px",
+  //               borderRadius: "3px",
+  //               border: "1px solid #ccc",
+  //               width: "90px",
+  //               minWidth: "90px",
+  //               resize: "vertical",
+  //               minHeight: "28px",
+  //               maxHeight: "60px",
+  //               fontSize: "10px",
+  //               textAlign: "left",
+  //               fontFamily: "inherit",
+  //               lineHeight: "1.2"
+  //             }}
+  //           />
+
+  //           <Button
+  //             variant="contained"
+  //             color="primary"
+  //             size="small"
+  //             onClick={handleUpdate}
+  //             sx={{ 
+  //               minWidth: "26px", 
+  //               width: "26px",
+  //               height: "26px",
+  //               minHeight: "26px",
+  //               p: 0
+  //             }}
+  //           >
+  //             <UpdateIcon fontSize="small" />
+  //           </Button>
+  //         </div>
+  //       );
+  //     },
+  //     ignoreRowClick: true,
+  //     width: "220px",
+  //     minWidth: "220px",
+  //     maxWidth: "220px",
+  //     center: false,
+  //     omit: !(
+  //       userRole === "Admin" ||
+  //       userRole === "Vertical-Head" ||
+  //       userRole === "SI_Admin"
+  //     ),
+  //   };
+
+  //   // Action Columns
+  //   const viewColumn = {
+  //     name: "View",
+  //     cell: (row) => (
+  //       <Tooltip title="View Details">
+  //         <IconButton
+  //           color="info"
+  //           size="small"
+  //           onClick={() => handleViewClick(row)}
+  //           sx={{ 
+  //             minWidth: "32px", 
+  //             width: "32px",
+  //             height: "32px"
+  //           }}
+  //         >
+  //           <VisibilityIcon fontSize="small" />
+  //         </IconButton>
+  //       </Tooltip>
+  //     ),
+  //     ignoreRowClick: true,
+  //     width: "80px",
+  //     minWidth: "80px",
+  //     maxWidth: "80px",
+  //     center: true,
+  //   };
+
+  //   const editColumn = {
+  //     name: "Edit",
+  //     cell: (row) => {
+  //       const isClosed = row.hod_observation && row.hod_observation.toLowerCase() === "closed";
+  //       if (isClosed) return null;
+
+  //       return (
+  //         <Tooltip title="Edit">
+  //           <IconButton
+  //             color="primary"
+  //             size="small"
+  //             onClick={() => handleEdit(row)}
+  //             sx={{ 
+  //               minWidth: "32px", 
+  //               width: "32px",
+  //               height: "32px"
+  //             }}
+  //           >
+  //             <EditIcon fontSize="small" />
+  //           </IconButton>
+  //         </Tooltip>
+  //       );
+  //     },
+  //     ignoreRowClick: true,
+  //     width: "80px",
+  //     minWidth: "80px",
+  //     maxWidth: "80px",
+  //     center: true,
+  //     omit:
+  //       userRole === "Admin" ||
+  //       userRole === "Vertical-Head" ||
+  //       userRole === "SI_Admin",
+  //   };
+
+  //   const updateColumn = {
+  //     name: "Update",
+  //     cell: (row) => {
+  //       const isOpen = row.hod_observation && row.hod_observation.toLowerCase() === "open";
+  //       if (isOpen) return null;
+
+  //       return (
+  //         <Tooltip title="Update">
+  //           <IconButton
+  //             color="primary"
+  //             size="small"
+  //             onClick={() => handleUpdateClick(row)}
+  //             sx={{ 
+  //               minWidth: "32px", 
+  //               width: "32px",
+  //               height: "32px"
+  //             }}
+  //           >
+  //             <EditIcon fontSize="small" />
+  //           </IconButton>
+  //         </Tooltip>
+  //       );
+  //     },
+  //     ignoreRowClick: true,
+  //     width: "80px",
+  //     minWidth: "80px",
+  //     maxWidth: "80px",
+  //     center: true,
+  //     omit:
+  //       userRole === "Admin" ||
+  //       userRole === "Vertical-Head" ||
+  //       userRole === "SI_Admin",
+  //   };
+
+  //   const deleteColumn = {
+  //     name: "Delete",
+  //     cell: (row) => (
+  //       <Tooltip title="Delete">
+  //         <IconButton
+  //           color="error"
+  //           size="small"
+  //           onClick={() => handleDelete(row)}
+  //           sx={{ 
+  //             minWidth: "32px", 
+  //             width: "32px",
+  //             height: "32px"
+  //           }}
+  //         >
+  //           <DeleteIcon fontSize="small" />
+  //         </IconButton>
+  //       </Tooltip>
+  //     ),
+  //     ignoreRowClick: true,
+  //     width: "80px",
+  //     minWidth: "80px",
+  //     maxWidth: "80px",
+  //     center: true,
+  //   };
+
+  //   const trackColumn = {
+  //     name: "Track",
+  //     cell: (row) => (
+  //       <Tooltip title="Track Meeting">
+  //         <IconButton
+  //           color="info"
+  //           size="small"
+  //           onClick={() => handleInfoClick(row)}
+  //           sx={{
+  //             minWidth: "32px",
+  //             width: "32px",
+  //             height: "32px"
+  //           }}
+  //         >
+  //           <InfoIcon fontSize="small" />
+  //         </IconButton>
+  //       </Tooltip>
+  //     ),
+  //     ignoreRowClick: true,
+  //     width: "80px",
+  //     minWidth: "80px",
+  //     maxWidth: "80px",
+  //     center: true,
+  //   };
+
+  //   // Define ALL columns (complete list)
+  //   const allColumns = [
+  //     // 1. M.ID (Keep)
+  //     {
+  //       name: "M.ID",
+  //       selector: (row) => row.id,
+  //       sortable: true,
+  //       width: "80px",
+  //       minWidth: "80px",
+  //       maxWidth: "80px",
+  //     },
+  //     // 2. Region (Hide)
+  //     {
+  //       name: "Region",
+  //       selector: (row) => row.region,
+  //       sortable: true,
+  //       width: "120px",
+  //       minWidth: "120px",
+  //     },
+  //     // 3. Regional Head (Hide for non-admin)
+  //     {
+  //       name: "Regional Head",
+  //       selector: (row) => row.regional_head,
+  //       sortable: true,
+  //       width: "150px",
+  //       minWidth: "150px",
+  //       omit: !(
+  //         userRole === "Admin" ||
+  //         userRole === "Vertical-Head" ||
+  //         userRole === "SI_Admin"
+  //       ),
+  //     },
+  //     // 4. State (Keep)
+  //     {
+  //       name: "State",
+  //       selector: (row) => row.state,
+  //       sortable: true,
+  //       width: "130px",
+  //       minWidth: "130px",
+  //     },
+  //     // 5. District (Keep)
+  //     {
+  //       name: "District",
+  //       selector: (row) => row.district,
+  //       sortable: true,
+  //       width: "130px",
+  //       minWidth: "130px",
+  //     },
+  //     // 6. Date Of Entry (Hide)
+  //     {
+  //       name: "Date Of Entry",
+  //       selector: (row) => row.created_at,
+  //       sortable: true,
+  //       cell: (row) =>
+  //         row.created_at
+  //           ? new Date(row.created_at).toLocaleString("en-IN", {
+  //               timeZone: "Asia/Kolkata",
+  //               day: "2-digit",
+  //               month: "long",
+  //               year: "numeric",
+  //               hour: "2-digit",
+  //               minute: "2-digit",
+  //               hour12: true,
+  //             })
+  //           : "-",
+  //       width: "180px",
+  //       minWidth: "180px",
+  //     },
+  //     // 7. Meeting Date (Keep)
+  //     {
+  //       name: "Meeting Date",
+  //       selector: (row) => row.dateOfMeeting,
+  //       sortable: true,
+  //       cell: (row) =>
+  //         row.dateOfMeeting
+  //           ? new Date(row.dateOfMeeting).toLocaleDateString("en-GB", {
+  //               day: "numeric",
+  //               month: "long",
+  //               year: "numeric",
+  //             })
+  //           : "-",
+  //       width: "140px",
+  //       minWidth: "140px",
+  //     },
+  //     // 8. Planned/Unplanned (Hide)
+  //     {
+  //       name: "Planned/Unplanned",
+  //       selector: (row) => row.type,
+  //       sortable: true,
+  //       width: "165px",
+  //       minWidth: "165px",
+  //     },
+  //     // 9. Online/Physical (Hide)
+  //     {
+  //       name: "Online/Physical",
+  //       selector: (row) => row.mode,
+  //       sortable: true,
+  //       width: "150px",
+  //       minWidth: "150px",
+  //     },
+  //     // 10. Meeting Place (Hide)
+  //     {
+  //       name: "Meeting Place",
+  //       selector: (row) => row.placeOfMeeting,
+  //       sortable: true,
+  //       width: "180px",
+  //       minWidth: "180px",
+  //     },
+  //     // 11. Attachment MOM uploaded in RADAR (Hide)
+  //     {
+  //       name: "Attachment MOM uploaded in RADAR",
+  //       selector: (row) => row.mom_uploaded_in_radar,
+  //       sortable: true,
+  //       width: "300px",
+  //       minWidth: "300px",
+  //     },
+  //     // 12. Activity Detail(s) (Hide)
+  //     {
+  //       name: "Activity Detail(s)",
+  //       cell: (row) => {
+  //         if (!row.activity_details) return "-";
+  //         const tempDiv = document.createElement('div');
+  //         tempDiv.innerHTML = row.activity_details;
+  //         const plainText = tempDiv.textContent || tempDiv.innerText || '';
+  //         return (
+  //           <div style={{
+  //             whiteSpace: 'nowrap',
+  //             overflow: 'hidden',
+  //             textOverflow: 'ellipsis',
+  //             width: '100%',
+  //             fontSize: '12px',
+  //             textAlign: 'left'
+  //           }}
+  //             title={plainText}
+  //           >
+  //             {plainText}
+  //           </div>
+  //         );
+  //       },
+  //       sortable: true,
+  //       width: "200px",
+  //       minWidth: "200px",
+  //     },
+  //     // 13. Important Decision(s) (Hide)
+  //     {
+  //       name: "Important Decision(s)",
+  //       selector: (row) => row.important_decision,
+  //       sortable: true,
+  //       width: "180px",
+  //       minWidth: "180px",
+  //     },
+  //     // 14. Status Update(s) (Hide)
+  //     {
+  //       name: "Status Update(s)",
+  //       cell: (row) => {
+  //         if (!row.status_update) return "-";
+  //         const tempDiv = document.createElement('div');
+  //         tempDiv.innerHTML = row.status_update;
+  //         const plainText = tempDiv.textContent || tempDiv.innerText || '';
+  //         return (
+  //           <div style={{
+  //             whiteSpace: 'nowrap',
+  //             overflow: 'hidden',
+  //             textOverflow: 'ellipsis',
+  //             width: '100%',
+  //             fontSize: '12px',
+  //             textAlign: 'left'
+  //           }}
+  //             title={plainText}
+  //           >
+  //             {plainText}
+  //           </div>
+  //         );
+  //       },
+  //       sortable: true,
+  //       width: "180px",
+  //       minWidth: "180px",
+  //     },
+  //     // 15. HOD Remark (Hide)
+  //     {
+  //       name: "HOD Remark",
+  //       selector: (row) => row.head_and_si_remark,
+  //       sortable: true,
+  //       width: "130px",
+  //       minWidth: "130px",
+  //     },
+  //     // 16. HOD Observation(s) (Keep)
+  //     {
+  //       name: "HOD Observation(s)",
+  //       selector: (row) => row.hod_observation,
+  //       sortable: true,
+  //       width: "180px",
+  //       minWidth: "150px",
+  //       maxWidth: "150px",
+  //     },
+  //     // 17. URL (Hide)
+  //     {
+  //       name: "URL",
+  //       cell: (row) =>
+  //         row.url ? (
+  //           <a
+  //             href={row.url.startsWith("http") ? row.url : `https://${row.url}`}
+  //             target="_blank"
+  //             rel="noopener noreferrer"
+  //             title={row.url}
+  //             style={{
+  //               display: "inline-flex",
+  //               alignItems: "center",
+  //               justifyContent: "center",
+  //               cursor: "pointer",
+  //               color: "#1976d2",
+  //             }}
+  //           >
+  //             <OpenInNewIcon fontSize="small" />
+  //           </a>
+  //         ) : (
+  //           <span>—</span>
+  //         ),
+  //       sortable: false,
+  //       width: "70px",
+  //       minWidth: "70px",
+  //       maxWidth: "70px",
+  //       center: true,
+  //     },
+  //     // 18. View Column (Keep)
+  //     viewColumn,
+  //     // 19. Edit Column (Hide)
+  //     editColumn,
+  //     // 20. Update Column (Hide)
+  //     updateColumn,
+  //     // 21. Delete Column (Keep)
+  //     deleteColumn,
+  //     // 22. Track Column (Keep)
+  //     trackColumn,
+  //     // 23. HOD/SI Remark Column (Keep for admin)
+  //     hodSiRemarkColumn,
+  //   ].filter(Boolean);
+
+  //   // Define DEFAULT view columns (only columns marked as "Keep")
+  //   const defaultViewColumns = allColumns.map(col => {
+  //     // Hide columns that are marked as "Hide" in default view
+  //     const hideColumns = [
+  //       "Region", 
+  //       "Date Of Entry", 
+  //       "Planned/Unplanned", 
+  //       "Online/Physical", 
+  //       "Meeting Place",
+  //       "Attachment MOM uploaded in RADAR",
+  //       "Activity Detail(s)", 
+  //       "Important Decision(s)",
+  //       "Status Update(s)", 
+  //       "HOD Remark", 
+  //       "URL",
+  //       "Edit",
+  //       "Update"
+  //     ];
+      
+  //     if (hideColumns.includes(col.name)) {
+  //       return {
+  //         ...col,
+  //         omit: true
+  //       };
+  //     }
+  //     return col;
+  //   });
+
+  //   // Final columns based on view mode
+  //   const columns = showAllColumns ? allColumns : defaultViewColumns;
+
+  //   const contextActions = (
+  //     <Button
+  //       key="delete"
+  //       onClick={handleBulkDelete}
+  //       variant="contained"
+  //       color="error"
+  //       startIcon={<DeleteIcon />}
+  //       disabled={selectedRows.length === 0}
+  //     >
+  //       Delete Selected ({selectedRows.length})
+  //     </Button>
+  //   );
+
+  //   const toggleAllColumns = () => {
+  //     setShowAllColumns(!showAllColumns);
+  //   };
+
+  //   return (
+  //     <div className="AddMeeting mt-6">
+  //       <div className="container-fluid">
+  //         <div className="row g-0">
+  //           <div className="col-12">
+  //             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+  //               <Button
+  //                 onClick={() => navigate(-1)}
+  //                 startIcon={<ArrowBackIcon />}
+  //                 sx={{ mr: 2 }}
+  //               >
+  //                 Back
+  //               </Button>
+  //               <Typography variant="h4" component="h1" sx={{ textAlign: 'center', width: '100%' }}>
+  //                 DFM Meetings - {status.charAt(0).toUpperCase() + status.slice(1)}
+  //               </Typography>
+
+  //               {activeFiltersCount > 0 && (
+  //                 <Chip
+  //                   label={`${activeFiltersCount} active filter(s)`}
+  //                   color="primary"
+  //                   size="small"
+  //                   sx={{ ml: 2 }}
+  //                 />
+  //               )}
+
+  //               <Box sx={{ ml: "auto" }}>
+  //                 <Button
+  //                   variant={showAllColumns ? "contained" : "outlined"}
+  //                   color="primary"
+  //                   onClick={toggleAllColumns}
+  //                   startIcon={<TableViewIcon />}
+  //                 >
+  //                   {showAllColumns ? "Default View" : "View All Columns"}
+  //                 </Button>
+  //               </Box>
+  //             </Box>
+
+  //             {/* Filter Section */}
+  //             <Box
+  //               sx={{
+  //                 mb: 3,
+  //                 p: 2,
+  //                 border: "1px solid #e0e0e0",
+  //                 borderRadius: 1,
+  //                 backgroundColor: "#f9f9f9",
+  //               }}
+  //             >
+  //               <Grid container spacing={2} alignItems="center">
+  //                 {(userRole === "Admin" ||
+  //                   userRole === "Vertical-Head" ||
+  //                   userRole === "SI_Admin") && (
+  //                   <Grid item xs={12} sm={6} md={3}>
+  //                     <FormControl fullWidth size="small">
+  //                       <InputLabel>Regional Head</InputLabel>
+  //                       <Select
+  //                         name="regional_head"
+  //                         value={filters.regional_head}
+  //                         onChange={handleFilterChange}
+  //                         label="Regional Head"
+  //                       >
+  //                         <MenuItem value="">All Regional Heads</MenuItem>
+  //                         {regionalHead.map((head) => (
+  //                           <MenuItem key={head} value={head}>
+  //                             {head}
+  //                           </MenuItem>
+  //                         ))}
+  //                       </Select>
+  //                     </FormControl>
+  //                   </Grid>
+  //                 )}
+
+  //                 <Grid item xs={12} sm={6} md={2}>
+  //                   <Button
+  //                     variant="contained"
+  //                     color="primary"
+  //                     onClick={applyFilters}
+  //                     fullWidth
+  //                     startIcon={<FilterAltIcon />}
+  //                     disabled={loading}
+  //                   >
+  //                     Apply Filters
+  //                   </Button>
+  //                 </Grid>
+
+  //                 <Grid item xs={12} sm={6} md={2}>
+  //                   <Button
+  //                     variant="outlined"
+  //                     onClick={resetFilters}
+  //                     fullWidth
+  //                     startIcon={<FilterAltOffIcon />}
+  //                     disabled={loading}
+  //                   >
+  //                     Reset
+  //                   </Button>
+  //                 </Grid>
+
+  //                 <Grid item xs={12} sm={6} md={2}>
+  //                   <Button
+  //                     variant="outlined"
+  //                     onClick={() => fetchData()}
+  //                     fullWidth
+  //                     startIcon={<RefreshIcon />}
+  //                     disabled={loading}
+  //                   >
+  //                     Refresh
+  //                   </Button>
+  //                 </Grid>
+
+  //                 <Grid item xs={12} sm={6} md={3}>
+  //                   <Button
+  //                     variant="contained"
+  //                     color="success"
+  //                     startIcon={<DownloadIcon />}
+  //                     onClick={exportToExcel}
+  //                     fullWidth
+  //                     disabled={loading || data.length === 0}
+  //                     style={{
+  //                       backgroundColor: "rgb(25 118 210)",
+  //                       fontWeight: "bold",
+  //                     }}
+  //                   >
+  //                     Export Excel
+  //                   </Button>
+  //                 </Grid>
+  //               </Grid>
+  //             </Box>
+
+  //             {/* Data Table */}
+  //             {error ? (
+  //               <Box
+  //                 sx={{
+  //                   p: 3,
+  //                   border: "1px solid #ffebee",
+  //                   backgroundColor: "#ffebee",
+  //                   borderRadius: 1,
+  //                   textAlign: "center",
+  //                 }}
+  //               >
+  //                 <Typography color="error">{error}</Typography>
+  //                 <Button
+  //                   variant="outlined"
+  //                   color="error"
+  //                   onClick={() => fetchData()}
+  //                   sx={{ mt: 2 }}
+  //                 >
+  //                   Retry
+  //                 </Button>
+  //               </Box>
+  //             ) : loading ? (
+  //               <Box
+  //                 sx={{
+  //                   display: "flex",
+  //                   justifyContent: "center",
+  //                   p: 3,
+  //                 }}
+  //               >
+  //                 <CircularProgress />
+  //               </Box>
+  //             ) : (
+  //               <>
+  //                 <Box
+  //                   sx={{
+  //                     mb: 2,
+  //                     display: "flex",
+  //                     justifyContent: "space-between",
+  //                     alignItems: "center",
+  //                   }}
+  //                 >
+  //                   <Typography variant="subtitle1">
+  //                     Showing {data.length} records
+  //                     {showAllColumns ? " (All Columns)" : " (Default View)"}
+  //                   </Typography>
+  //                   {selectedRows.length > 0 && contextActions}
+  //                 </Box>
+
+  //                 <Box sx={{ 
+  //                   border: "1px solid #e0e0e0", 
+  //                   borderRadius: 1, 
+  //                   overflow: "hidden",
+  //                 }}>
+  //                   <DataTable
+  //                     columns={columns}
+  //                     data={data}
+  //                     pagination
+  //                     highlightOnHover
+  //                     progressPending={loading}
+  //                     paginationPerPage={10}
+  //                     paginationRowsPerPageOptions={[10, 20, 30, 50]}
+  //                     noDataComponent={
+  //                       <Typography sx={{ p: 3, textAlign: "center" }}>
+  //                         No DFM meetings found. Try adjusting your filters.
+  //                       </Typography>
+  //                     }
+  //                     customStyles={{
+  //                       table: {
+  //                         style: {
+  //                           minWidth: showAllColumns ? 'fit-content' : '100%',
+  //                         },
+  //                       },
+  //                       headCells: {
+  //                         style: {
+  //                           backgroundColor: "#307eac",
+  //                           fontWeight: "bold",
+  //                           color: "#fff",
+  //                           borderRight: "1px solid #fff",
+  //                           borderBottom: "1px solid #e0e0e0",
+  //                           padding: "8px 12px",
+  //                           fontSize: "14px",
+  //                         },
+  //                       },
+  //                       cells: {
+  //                         style: {
+  //                           borderRight: "1px solid #e0e0e0",
+  //                           borderBottom: "1px solid #e0e0e0",
+  //                           padding: "8px 12px",
+  //                           fontSize: "13px",
+  //                         },
+  //                       },
+  //                     }}
+  //                     fixedHeader
+  //                     fixedHeaderScrollHeight="calc(100vh - 300px)"
+  //                   />
+  //                 </Box>
+  //               </>
+  //             )}
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // };
+
+  // export default DFMList;
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Autocomplete, TextField } from "@mui/material";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 import {
@@ -884,16 +1956,38 @@ const DFMList = () => {
   const userEmail = userData.data.user.email;
 
   const [regionalHead, setRegionalHead] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    if (location.state && location.state.filters) {
+      setFilters(location.state.filters);
+      fetchData(location.state.filters);
+    }
+
+    if (location.state && location.state.currentPage) {
+      setCurrentPage(location.state.currentPage);
+    }
+  }, []);
+
   const searchParams = new URLSearchParams(location.search);
-  const status = searchParams.get("status") || ""; // "open" or "closed"
+  const status = searchParams.get("status") || "";
 
   const [data, setData] = useState([]);
+  const [rawData, setRawData] = useState([]); // ✅ ADD THIS
+
   const [filters, setFilters] = useState({
+    mid: "",
     regional_head: "",
   });
+  
+  const [filterOptions, setFilterOptions] = useState({
+    mids: [],
+  });
+  
   const [loading, setLoading] = useState(true);
   const [selectedRows, setSelectedRows] = useState([]);
   const [toggleCleared, setToggleCleared] = useState(false);
@@ -901,7 +1995,6 @@ const DFMList = () => {
   const [error, setError] = useState(null);
   const [showAllColumns, setShowAllColumns] = useState(false);
 
-  // Count active filters
   useEffect(() => {
     const count = Object.values(filters).filter((val) => val !== "").length;
     setActiveFiltersCount(count);
@@ -924,30 +2017,78 @@ const DFMList = () => {
         }
       );
 
-      // Filter data based on status (case-insensitive)
+      console.log("API Response:", response.data);
+
+      if (!response.data || !response.data.data) {
+        throw new Error("Invalid data structure from API");
+      }
+
       const statusFilteredData = response.data.data.filter((item) => {
         if (!item.hod_observation) return false;
         const obs = item.hod_observation.toLowerCase();
         const statusLower = status.toLowerCase();
-        return obs === statusLower;
+        return obs === statusLower || obs === "reopen";
+      });
+
+      statusFilteredData.sort((a, b) => {
+        const obsA = a.hod_observation ? a.hod_observation.toLowerCase() : "";
+        const obsB = b.hod_observation ? b.hod_observation.toLowerCase() : "";
+        if (obsA === "reopen" && obsB !== "reopen") return -1;
+        if (obsA !== "reopen" && obsB === "reopen") return 1;
+        return 0;
       });
 
       console.log("DFM Filtered Data:", statusFilteredData);
-      setData(statusFilteredData);
+
+      setRawData(response.data.data); // ✅ FULL DATA
+      setData(statusFilteredData);    // ✅ STATUS-FILTERED DATA
     } catch (error) {
       console.error("Error fetching data:", error);
-      setError("Failed to load data. Please try again.");
+      setError(error.message || "Failed to fetch data");
     } finally {
       setLoading(false);
     }
   };
 
-  // Initial data fetch
   useEffect(() => {
-    fetchData();
+    if (location.state && location.state.filters) {
+      setFilters(location.state.filters);
+      setCurrentPage(location.state.currentPage || 1);
+      fetchData(location.state.filters);
+    } else {
+      fetchData();
+    }
   }, [status]);
 
-  //fetching regional head data
+  // ✅ AUTO FILTER LOGIC (SAME AS SKM)
+  useEffect(() => {
+    let tempData = [...rawData];
+
+    // 1️⃣ Status filter
+    tempData = tempData.filter((item) => {
+      if (!item.hod_observation) return false;
+      const obs = item.hod_observation.toLowerCase();
+      const statusLower = status.toLowerCase();
+      return obs === statusLower || obs === "reopen";
+    });
+
+    // 2️⃣ Regional Head filter
+    if (filters.regional_head) {
+      tempData = tempData.filter(
+        (item) =>
+          item.regional_head === filters.regional_head ||
+          item.regional_head_name === filters.regional_head
+      );
+    }
+
+    // 3️⃣ MID filter
+    if (filters.mid !== "") {
+      tempData = tempData.filter((item) => item.id === filters.mid);
+    }
+
+    setData(tempData);
+  }, [filters, rawData, status]);
+
   useEffect(() => {
     const fetchRegionalHead = async () => {
       try {
@@ -973,17 +2114,14 @@ const DFMList = () => {
   };
 
   const applyFilters = () => {
-    const filterParams = Object.fromEntries(
-      Object.entries(filters).filter(([_, v]) => v !== "")
-    );
-    fetchData(filterParams);
+    // filtering is handled automatically via useEffect
   };
 
   const resetFilters = () => {
     setFilters({
+      mid: "",
       regional_head: "",
     });
-    fetchData();
   };
 
   const handleEdit = (row) => {
@@ -995,7 +2133,19 @@ const DFMList = () => {
   };
 
   const handleViewClick = (row) => {
-    navigate("/view-content", { state: { rowData: row } });
+    navigate("/view-content", {
+      state: {
+        rowData: row,
+        hodSiAllowed:
+          userRole === "Admin" ||
+          userRole === "Vertical-Head" ||
+          userRole === "SI_Admin",
+        listState: {
+          filters,
+          currentPage: currentPage,
+        },
+      },
+    });
   };
 
   const handleDelete = async (row) => {
@@ -1122,7 +2272,7 @@ const DFMList = () => {
           const cell = ws[cellAddress];
           if (cell && cell.v instanceof Date) {
             cell.t = "d";
-            cell.z = "dd-mmm-yyyy  hh:mm:ss";
+            cell.z = "dd-mmm-yyyy hh:mm:ss";
           }
         }
       }
@@ -1142,7 +2292,6 @@ const DFMList = () => {
     navigate(`/meeting-tracking/${row.id}`);
   };
 
-  // HOD/SI Remark Column
   const hodSiRemarkColumn = {
     name: "HOD/SI Remark",
     cell: (row) => {
@@ -1167,6 +2316,19 @@ const DFMList = () => {
               activity_type: row.activity_type,
             }
           );
+
+          setData((prevData) =>
+            prevData.map((item) =>
+              item.id === row.id
+                ? {
+                    ...item,
+                    hod_observation: status,
+                    head_and_si_remark: comment,
+                  }
+                : item
+            )
+          );
+
           alert("Data Updated Successfully!");
           fetchData();
         } catch (error) {
@@ -1176,13 +2338,15 @@ const DFMList = () => {
       };
 
       return (
-        <div style={{ 
-          display: "flex", 
-          alignItems: "center", 
-          gap: "3px", 
-          minWidth: "220px",
-          maxWidth: "220px"
-        }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "3px",
+            minWidth: "220px",
+            maxWidth: "220px",
+          }}
+        >
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
@@ -1193,7 +2357,7 @@ const DFMList = () => {
               minWidth: "75px",
               fontSize: "10px",
               textAlign: "left",
-              height: "28px"
+              height: "28px",
             }}
           >
             <option value="">Status</option>
@@ -1217,7 +2381,7 @@ const DFMList = () => {
               fontSize: "10px",
               textAlign: "left",
               fontFamily: "inherit",
-              lineHeight: "1.2"
+              lineHeight: "1.2",
             }}
           />
 
@@ -1226,12 +2390,12 @@ const DFMList = () => {
             color="primary"
             size="small"
             onClick={handleUpdate}
-            sx={{ 
-              minWidth: "26px", 
+            sx={{
+              minWidth: "26px",
               width: "26px",
               height: "26px",
               minHeight: "26px",
-              p: 0
+              p: 0,
             }}
           >
             <UpdateIcon fontSize="small" />
@@ -1251,7 +2415,6 @@ const DFMList = () => {
     ),
   };
 
-  // Action Columns
   const viewColumn = {
     name: "View",
     cell: (row) => (
@@ -1260,11 +2423,7 @@ const DFMList = () => {
           color="info"
           size="small"
           onClick={() => handleViewClick(row)}
-          sx={{ 
-            minWidth: "32px", 
-            width: "32px",
-            height: "32px"
-          }}
+          sx={{ minWidth: "32px", width: "32px", height: "32px" }}
         >
           <VisibilityIcon fontSize="small" />
         </IconButton>
@@ -1280,7 +2439,8 @@ const DFMList = () => {
   const editColumn = {
     name: "Edit",
     cell: (row) => {
-      const isClosed = row.hod_observation && row.hod_observation.toLowerCase() === "closed";
+      const isClosed =
+        row.hod_observation && row.hod_observation.toLowerCase() === "closed";
       if (isClosed) return null;
 
       return (
@@ -1289,11 +2449,7 @@ const DFMList = () => {
             color="primary"
             size="small"
             onClick={() => handleEdit(row)}
-            sx={{ 
-              minWidth: "32px", 
-              width: "32px",
-              height: "32px"
-            }}
+            sx={{ minWidth: "32px", width: "32px", height: "32px" }}
           >
             <EditIcon fontSize="small" />
           </IconButton>
@@ -1314,7 +2470,8 @@ const DFMList = () => {
   const updateColumn = {
     name: "Update",
     cell: (row) => {
-      const isOpen = row.hod_observation && row.hod_observation.toLowerCase() === "open";
+      const isOpen =
+        row.hod_observation && row.hod_observation.toLowerCase() === "open";
       if (isOpen) return null;
 
       return (
@@ -1323,11 +2480,7 @@ const DFMList = () => {
             color="primary"
             size="small"
             onClick={() => handleUpdateClick(row)}
-            sx={{ 
-              minWidth: "32px", 
-              width: "32px",
-              height: "32px"
-            }}
+            sx={{ minWidth: "32px", width: "32px", height: "32px" }}
           >
             <EditIcon fontSize="small" />
           </IconButton>
@@ -1353,11 +2506,7 @@ const DFMList = () => {
           color="error"
           size="small"
           onClick={() => handleDelete(row)}
-          sx={{ 
-            minWidth: "32px", 
-            width: "32px",
-            height: "32px"
-          }}
+          sx={{ minWidth: "32px", width: "32px", height: "32px" }}
         >
           <DeleteIcon fontSize="small" />
         </IconButton>
@@ -1372,22 +2521,37 @@ const DFMList = () => {
 
   const trackColumn = {
     name: "Track",
-    cell: (row) => (
-      <Tooltip title="Track Meeting">
-        <IconButton
-          color="info"
-          size="small"
-          onClick={() => handleInfoClick(row)}
-          sx={{
-            minWidth: "32px",
-            width: "32px",
-            height: "32px"
-          }}
-        >
-          <InfoIcon fontSize="small" />
-        </IconButton>
-      </Tooltip>
-    ),
+    cell: (row) => {
+      const isReopen =
+        row.hod_observation && row.hod_observation.toLowerCase() === "reopen";
+
+      return (
+        <Tooltip title="Track Meeting">
+          <IconButton
+            size="small"
+            onClick={() => handleInfoClick(row)}
+            sx={{
+              minWidth: "38px",
+              width: "38px",
+              height: "32px",
+              backgroundColor: isReopen ? "#ff4444" : "transparent",
+              color: isReopen ? "#ffffff" : "#1976d2",
+              fontWeight: isReopen ? "bold" : "normal",
+              animation: isReopen ? "pulse 1.5s ease-in-out infinite" : "none",
+              "&:hover": {
+                backgroundColor: isReopen
+                  ? "#ff2222"
+                  : "rgba(25, 118, 210, 0.04)",
+                transform: isReopen ? "scale(1.1)" : "scale(1.05)",
+              },
+              transition: "all 0.3s ease",
+            }}
+          >
+            <InfoIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      );
+    },
     ignoreRowClick: true,
     width: "80px",
     minWidth: "80px",
@@ -1395,9 +2559,7 @@ const DFMList = () => {
     center: true,
   };
 
-  // Define ALL columns (complete list)
   const allColumns = [
-    // 1. M.ID (Keep)
     {
       name: "M.ID",
       selector: (row) => row.id,
@@ -1406,18 +2568,16 @@ const DFMList = () => {
       minWidth: "80px",
       maxWidth: "80px",
     },
-    // 2. Region (Hide)
     {
       name: "Region",
-      selector: (row) => row.region,
+      selector: (row) => row.region || "-",
       sortable: true,
       width: "120px",
       minWidth: "120px",
     },
-    // 3. Regional Head (Hide for non-admin)
     {
       name: "Regional Head",
-      selector: (row) => row.regional_head,
+      selector: (row) => row.regional_head || "-",
       sortable: true,
       width: "150px",
       minWidth: "150px",
@@ -1427,23 +2587,20 @@ const DFMList = () => {
         userRole === "SI_Admin"
       ),
     },
-    // 4. State (Keep)
     {
       name: "State",
-      selector: (row) => row.state,
+      selector: (row) => row.state || "-",
       sortable: true,
       width: "130px",
       minWidth: "130px",
     },
-    // 5. District (Keep)
     {
       name: "District",
-      selector: (row) => row.district,
+      selector: (row) => row.district || "-",
       sortable: true,
       width: "130px",
       minWidth: "130px",
     },
-    // 6. Date Of Entry (Hide)
     {
       name: "Date Of Entry",
       selector: (row) => row.created_at,
@@ -1463,7 +2620,6 @@ const DFMList = () => {
       width: "180px",
       minWidth: "180px",
     },
-    // 7. Meeting Date (Keep)
     {
       name: "Meeting Date",
       selector: (row) => row.dateOfMeeting,
@@ -1479,55 +2635,51 @@ const DFMList = () => {
       width: "140px",
       minWidth: "140px",
     },
-    // 8. Planned/Unplanned (Hide)
     {
       name: "Planned/Unplanned",
-      selector: (row) => row.type,
+      selector: (row) => row.type || "-",
       sortable: true,
       width: "165px",
       minWidth: "165px",
     },
-    // 9. Online/Physical (Hide)
     {
       name: "Online/Physical",
-      selector: (row) => row.mode,
+      selector: (row) => row.mode || "-",
       sortable: true,
       width: "150px",
       minWidth: "150px",
     },
-    // 10. Meeting Place (Hide)
     {
       name: "Meeting Place",
-      selector: (row) => row.placeOfMeeting,
+      selector: (row) => row.placeOfMeeting || "-",
       sortable: true,
       width: "180px",
       minWidth: "180px",
     },
-    // 11. Attachment MOM uploaded in RADAR (Hide)
     {
       name: "Attachment MOM uploaded in RADAR",
-      selector: (row) => row.mom_uploaded_in_radar,
+      selector: (row) => row.mom_uploaded_in_radar || "-",
       sortable: true,
       width: "300px",
       minWidth: "300px",
     },
-    // 12. Activity Detail(s) (Hide)
     {
       name: "Activity Detail(s)",
       cell: (row) => {
         if (!row.activity_details) return "-";
-        const tempDiv = document.createElement('div');
+        const tempDiv = document.createElement("div");
         tempDiv.innerHTML = row.activity_details;
-        const plainText = tempDiv.textContent || tempDiv.innerText || '';
+        const plainText = tempDiv.textContent || tempDiv.innerText || "";
         return (
-          <div style={{
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            width: '100%',
-            fontSize: '12px',
-            textAlign: 'left'
-          }}
+          <div
+            style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              width: "100%",
+              fontSize: "12px",
+              textAlign: "left",
+            }}
             title={plainText}
           >
             {plainText}
@@ -1538,31 +2690,30 @@ const DFMList = () => {
       width: "200px",
       minWidth: "200px",
     },
-    // 13. Important Decision(s) (Hide)
     {
       name: "Important Decision(s)",
-      selector: (row) => row.important_decision,
+      selector: (row) => row.important_decision || "-",
       sortable: true,
       width: "180px",
       minWidth: "180px",
     },
-    // 14. Status Update(s) (Hide)
     {
       name: "Status Update(s)",
       cell: (row) => {
         if (!row.status_update) return "-";
-        const tempDiv = document.createElement('div');
+        const tempDiv = document.createElement("div");
         tempDiv.innerHTML = row.status_update;
-        const plainText = tempDiv.textContent || tempDiv.innerText || '';
+        const plainText = tempDiv.textContent || tempDiv.innerText || "";
         return (
-          <div style={{
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            width: '100%',
-            fontSize: '12px',
-            textAlign: 'left'
-          }}
+          <div
+            style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              width: "100%",
+              fontSize: "12px",
+              textAlign: "left",
+            }}
             title={plainText}
           >
             {plainText}
@@ -1573,24 +2724,47 @@ const DFMList = () => {
       width: "180px",
       minWidth: "180px",
     },
-    // 15. HOD Remark (Hide)
     {
       name: "HOD Remark",
-      selector: (row) => row.head_and_si_remark,
+      selector: (row) => row.head_and_si_remark || "-",
       sortable: true,
       width: "130px",
       minWidth: "130px",
     },
-    // 16. HOD Observation(s) (Keep)
     {
       name: "HOD Observation(s)",
       selector: (row) => row.hod_observation,
       sortable: true,
-      width: "180px",
+      width: "198px",
       minWidth: "150px",
       maxWidth: "150px",
+      cell: (row) => {
+        const isReopen =
+          row.hod_observation && row.hod_observation.toLowerCase() === "reopen";
+
+        return (
+          <div
+            title={row.hod_observation}
+            style={{
+              color: isReopen ? "#ff4444" : "inherit",
+              fontWeight: isReopen ? "bold" : "normal",
+              textTransform: isReopen ? "uppercase" : "none",
+              animation: isReopen ? "pulse 1.5s ease-in-out infinite" : "none",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "block",
+              width: "100%",
+              textAlign: "left",
+              padding: "4px 0",
+              fontSize: "12px",
+            }}
+          >
+            {row.hod_observation || "-"}
+          </div>
+        );
+      },
     },
-    // 17. URL (Hide)
     {
       name: "URL",
       cell: (row) =>
@@ -1619,49 +2793,37 @@ const DFMList = () => {
       maxWidth: "70px",
       center: true,
     },
-    // 18. View Column (Keep)
     viewColumn,
-    // 19. Edit Column (Hide)
     editColumn,
-    // 20. Update Column (Hide)
     updateColumn,
-    // 21. Delete Column (Keep)
     deleteColumn,
-    // 22. Track Column (Keep)
     trackColumn,
-    // 23. HOD/SI Remark Column (Keep for admin)
     hodSiRemarkColumn,
   ].filter(Boolean);
 
-  // Define DEFAULT view columns (only columns marked as "Keep")
-  const defaultViewColumns = allColumns.map(col => {
-    // Hide columns that are marked as "Hide" in default view
+  const defaultViewColumns = allColumns.map((col) => {
     const hideColumns = [
-      "Region", 
-      "Date Of Entry", 
-      "Planned/Unplanned", 
-      "Online/Physical", 
+      "Region",
+      "Date Of Entry",
+      "Planned/Unplanned",
+      "Online/Physical",
       "Meeting Place",
       "Attachment MOM uploaded in RADAR",
-      "Activity Detail(s)", 
+      "Activity Detail(s)",
       "Important Decision(s)",
-      "Status Update(s)", 
-      "HOD Remark", 
+      "Status Update(s)",
+      "HOD Remark",
       "URL",
       "Edit",
-      "Update"
+      "Update",
     ];
-    
+
     if (hideColumns.includes(col.name)) {
-      return {
-        ...col,
-        omit: true
-      };
+      return { ...col, omit: true };
     }
     return col;
   });
 
-  // Final columns based on view mode
   const columns = showAllColumns ? allColumns : defaultViewColumns;
 
   const contextActions = (
@@ -1681,6 +2843,38 @@ const DFMList = () => {
     setShowAllColumns(!showAllColumns);
   };
 
+  // ✅ MID OPTIONS UPDATE (SAME AS SKM)
+  useEffect(() => {
+    if (!rawData || rawData.length === 0) return;
+
+    if (filters.regional_head) {
+      const filteredMids = rawData
+        .filter(
+          (item) =>
+            item.regional_head === filters.regional_head ||
+            item.regional_head_name === filters.regional_head
+        )
+        .map((item) => item.id);
+
+      console.log("Filtered MID:", filteredMids);
+
+      setFilterOptions((prev) => ({
+        ...prev,
+        mids: [...new Set(filteredMids)],
+      }));
+
+      setFilters((prev) => ({
+        ...prev,
+        mid: filteredMids.includes(prev.mid) ? prev.mid : "",
+      }));
+    } else {
+      setFilterOptions((prev) => ({
+        ...prev,
+        mids: rawData.map((item) => item.id),
+      }));
+    }
+  }, [filters.regional_head, rawData]);
+
   return (
     <div className="AddMeeting mt-6">
       <div className="container-fluid">
@@ -1692,10 +2886,14 @@ const DFMList = () => {
                 startIcon={<ArrowBackIcon />}
                 sx={{ mr: 2 }}
               >
-                Back
+                {/* Back */}
               </Button>
-              <Typography variant="h4" component="h1" sx={{ textAlign: 'center', width: '100%' }}>
-                DFM Meetings - {status.charAt(0).toUpperCase() + status.slice(1)}
+              <Typography
+                variant="h4"
+                component="h1"
+                sx={{ textAlign: "center", width: "100%" }}
+              >
+                DFM Meetings
               </Typography>
 
               {activeFiltersCount > 0 && (
@@ -1707,7 +2905,13 @@ const DFMList = () => {
                 />
               )}
 
-              <Box sx={{ ml: "auto" }}>
+              <Box
+                sx={{
+                  ml: "auto",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
                 <Button
                   variant={showAllColumns ? "contained" : "outlined"}
                   color="primary"
@@ -1719,7 +2923,6 @@ const DFMList = () => {
               </Box>
             </Box>
 
-            {/* Filter Section */}
             <Box
               sx={{
                 mb: 3,
@@ -1752,6 +2955,28 @@ const DFMList = () => {
                     </FormControl>
                   </Grid>
                 )}
+
+                <Grid item xs={12} sm={6} md={2}>
+                  <Autocomplete
+                    options={filterOptions.mids}
+                    value={filters.mid || null}
+                    onChange={(event, newValue) => {
+                      setFilters((prev) => ({
+                        ...prev,
+                        mid: newValue ? Number(newValue) : "",
+                      }));
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="MID"
+                        size="small"
+                        placeholder="Search MID"
+                      />
+                    )}
+                    clearOnEscape
+                  />
+                </Grid>
 
                 <Grid item xs={12} sm={6} md={2}>
                   <Button
@@ -1809,7 +3034,6 @@ const DFMList = () => {
               </Grid>
             </Box>
 
-            {/* Data Table */}
             {error ? (
               <Box
                 sx={{
@@ -1857,15 +3081,21 @@ const DFMList = () => {
                   {selectedRows.length > 0 && contextActions}
                 </Box>
 
-                <Box sx={{ 
-                  border: "1px solid #e0e0e0", 
-                  borderRadius: 1, 
-                  overflow: "hidden",
-                }}>
+                <Box
+                  sx={{
+                    border: "1px solid #e0e0e0",
+                    borderRadius: 1,
+                    overflow: "hidden",
+                  }}
+                >
                   <DataTable
+                    key={currentPage}
                     columns={columns}
                     data={data}
                     pagination
+                    paginationServer={false}
+                    paginationDefaultPage={currentPage}
+                    onChangePage={(page) => setCurrentPage(page)}
                     highlightOnHover
                     progressPending={loading}
                     paginationPerPage={10}
@@ -1878,7 +3108,7 @@ const DFMList = () => {
                     customStyles={{
                       table: {
                         style: {
-                          minWidth: showAllColumns ? 'fit-content' : '100%',
+                          minWidth: showAllColumns ? "fit-content" : "100%",
                         },
                       },
                       headCells: {
@@ -1905,6 +3135,23 @@ const DFMList = () => {
                     fixedHeaderScrollHeight="calc(100vh - 300px)"
                   />
                 </Box>
+
+                <style jsx global>{`
+                  @keyframes pulse {
+                    0% {
+                      opacity: 1;
+                      box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
+                    }
+                    50% {
+                      opacity: 0.8;
+                      box-shadow: 0 0 0 10px rgba(106, 148, 227, 0);
+                    }
+                    100% {
+                      opacity: 1;
+                      box-shadow: 0 0 0 0 rgba(53, 154, 212, 0);
+                    }
+                  }
+                `}</style>
               </>
             )}
           </div>
