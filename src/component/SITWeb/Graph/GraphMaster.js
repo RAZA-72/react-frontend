@@ -6,12 +6,11 @@ import {
   MenuItem,
   Select,
   Box,
-  Button,
 } from "@mui/material";
 import BarChart from "./BarChart";
 import PieChart from "./PieChart";
 import axios from "axios";
-import { BaseUrl, getBarCountData } from "../../url/url";
+import { BaseUrl } from "../../url/url";
 
 function GraphMaster({ userRole, userName }) {
   const [years, setYears] = useState([]);

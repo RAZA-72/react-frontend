@@ -56,6 +56,7 @@ const stepTitleStyle = {
 
   const [formData, setFormData] = useState(() => {
     const storedData = loadUserFormData();
+    console.log("stored_data", storedData);
     return storedData && storedData.States ? storedData : formFields;
   });
   const [numStates, setNumStates] = useState(() => {
@@ -885,7 +886,7 @@ const stepTitleStyle = {
     }}
     onClick={async () => {
       const data = await importExcel(selectedFile, formData);
-      setFormData({ ...data });
+       setFormData({ ...data });
       setImportKey((k) => k + 1);
       if (data.States && data.States.length) {
         setNumStates(data.States.length);

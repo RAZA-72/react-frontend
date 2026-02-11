@@ -9,7 +9,7 @@ export const saveUserFormData = (data) => {
 //retrieve userFormData from local storage
 export const loadUserFormData = () => {
   const data = localStorage.getItem("userFormData");
-  return data ? JSON.parse(data) : null;
+   return data ? JSON.parse(data) : null;
 };
 
 //clear local storage data after final submission

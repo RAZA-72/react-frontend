@@ -17,7 +17,8 @@ export const importExcel = (file, existingData) => {
                 if (workbook.Sheets["Overview"]) {
                     const rows = XLSX.utils.sheet_to_json(
                         workbook.Sheets["Overview"],
-                        { header: 4, defval: "" }
+                        { defval: "" }
+                        // { header: 4, defval: "" }
                     );
 
                     data = parseOverviewSheet(rows, data);

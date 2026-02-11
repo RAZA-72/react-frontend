@@ -2665,931 +2665,931 @@
 // export default Equity;
 
 
-import "./Equity.css";
-import { loadUserFormData } from "../utils/StorageHelper";
-import React, { useState } from "react";
+  import "./Equity.css";
+  import { loadUserFormData } from "../utils/StorageHelper";
+  import React, { useState } from "react";
 
-function Equity({
-  formData,
-  handleChange,
-  handleNestedChange,
-  handleRowCountChange,
-  handleInputChange,
-  setFormData,
-  selectedMonthName,        
-  setSelectedMonthName
-}) {
-  const [detailOfExistingNums, setDetailOfExistingNums] = useState(function() {
-    const storedData = loadUserFormData();
-    return storedData.ExistingEquityProviders
-      ? storedData.ExistingEquityProviders.length
-      : 1;
-  });
+  function Equity({
+    formData,
+    handleChange,
+    handleNestedChange,
+    handleRowCountChange,
+    handleInputChange,
+    setFormData,
+    selectedMonthName,        
+    setSelectedMonthName
+  }) {
+    const [detailOfExistingNums, setDetailOfExistingNums] = useState(function() {
+      const storedData = loadUserFormData();
+      return storedData.ExistingEquityProviders
+        ? storedData.ExistingEquityProviders.length
+        : 1;
+    });
 
-  const [detailOfFreshNums, setDetailOfFreshNums] = useState(function() {
-    const storedData = loadUserFormData();
-    return storedData.equityreceivedExistingEquityProviders
-      ? storedData.equityreceivedExistingEquityProviders.length
-      : 1;
-  });
+    const [detailOfFreshNums, setDetailOfFreshNums] = useState(function() {
+      const storedData = loadUserFormData();
+      return storedData.equityreceivedExistingEquityProviders
+        ? storedData.equityreceivedExistingEquityProviders.length
+        : 1;
+    });
 
-  const [detailOfEquityNums, setDetailOfEquityNums] = useState(function() {
-    const storedData = loadUserFormData();
-    return storedData.equityboughtExistingEquityProviders
-      ? storedData.equityboughtExistingEquityProviders.length
-      : 1;
-  });
+    const [detailOfEquityNums, setDetailOfEquityNums] = useState(function() {
+      const storedData = loadUserFormData();
+      return storedData.equityboughtExistingEquityProviders
+        ? storedData.equityboughtExistingEquityProviders.length
+        : 1;
+    });
 
-  // Section header component
-  const SectionHeader = function({ title, date }) {
-    return (
-      <div style={{
-        background: "linear-gradient(135deg, #2B60AD 0%, #39B1AC 100%)",
-        padding: "14px 20px",
-        borderRadius: "8px 8px 0 0",
-        marginTop: "20px",
-        marginBottom: "0",
-        position: "relative",
-        overflow: "hidden",
-        boxShadow: "0 2px 8px rgba(43, 96, 173, 0.15)"
-      }}>
+    // Section header component
+    const SectionHeader = function({ title, date }) {
+      return (
         <div style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)",
-          backgroundSize: "20px 20px",
-          opacity: 0.3
-        }}></div>
-        <div style={{ 
-          display: "flex", 
-          justifyContent: "space-between", 
-          alignItems: "center",
+          background: "linear-gradient(135deg, #2B60AD 0%, #39B1AC 100%)",
+          padding: "14px 20px",
+          borderRadius: "8px 8px 0 0",
+          marginTop: "20px",
+          marginBottom: "0",
           position: "relative",
-          zIndex: 1
+          overflow: "hidden",
+          boxShadow: "0 2px 8px rgba(43, 96, 173, 0.15)"
         }}>
-          <h6 style={{
-            color: "#FFFFFF",
-            fontSize: "13px",
-            fontWeight: "700",
-            margin: 0,
-            textTransform: "uppercase",
-            letterSpacing: "1px",
-            textAlign: "left",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+          <div style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+            opacity: 0.3
+          }}></div>
+          <div style={{ 
+            display: "flex", 
+            justifyContent: "space-between", 
+            alignItems: "center",
+            position: "relative",
+            zIndex: 1
           }}>
-            {title}
-          </h6>
-          {date && (
-            <span style={{
+            <h6 style={{
               color: "#FFFFFF",
-              fontSize: "11px",
-              fontWeight: "600",
-              backgroundColor: "rgba(255,255,255,0.2)",
-              padding: "5px 14px",
-              borderRadius: "16px",
-              backdropFilter: "blur(10px)",
-              border: "1px solid rgba(255,255,255,0.25)"
+              fontSize: "13px",
+              fontWeight: "700",
+              margin: 0,
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+              textAlign: "left",
+              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
             }}>
-              {date}
+              {title}
+            </h6>
+            {date && (
+              <span style={{
+                color: "#FFFFFF",
+                fontSize: "11px",
+                fontWeight: "600",
+                backgroundColor: "rgba(255,255,255,0.2)",
+                padding: "5px 14px",
+                borderRadius: "16px",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255,255,255,0.25)"
+              }}>
+                {date}
+              </span>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    // Calculated field component
+    const CalculatedField = function({ label, value }) {
+      return (
+        <div style={{
+          padding: "12px 16px",
+          background: "linear-gradient(135deg, #F0FDFC 0%, #E6F9F7 100%)",
+          borderRadius: "8px",
+          borderLeft: "4px solid #39B1AC",
+          marginBottom: "12px",
+          boxShadow: "0 2px 6px rgba(57, 177, 172, 0.08)"
+        }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ 
+              fontSize: "12px", 
+              fontWeight: "700", 
+              color: "#0F766E", 
+              letterSpacing: "0.3px",
+              textTransform: "uppercase",
+              textAlign: "left",
+              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+            }}>
+              {label}
             </span>
-          )}
+            <span style={{ 
+              fontSize: "17px", 
+              fontWeight: "700", 
+              color: "#0D5653",
+              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+            }}>
+              {value || 0}
+            </span>
+          </div>
         </div>
-      </div>
-    );
-  };
+      );
+    };
 
-  // Calculated field component
-  const CalculatedField = function({ label, value }) {
-    return (
-      <div style={{
-        padding: "12px 16px",
-        background: "linear-gradient(135deg, #F0FDFC 0%, #E6F9F7 100%)",
-        borderRadius: "8px",
-        borderLeft: "4px solid #39B1AC",
-        marginBottom: "12px",
-        boxShadow: "0 2px 6px rgba(57, 177, 172, 0.08)"
-      }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ 
-            fontSize: "12px", 
-            fontWeight: "700", 
-            color: "#0F766E", 
-            letterSpacing: "0.3px",
-            textTransform: "uppercase",
-            textAlign: "left",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-          }}>
+    // FormInput component with unique IDs to prevent focus loss
+    const FormInput = function({ label, value, section, field, readOnly }) {
+      const isReadOnly = readOnly || false;
+      const inputId = "input-" + section + "-" + field + "-" + Math.random();
+      
+      return (
+        <div>
+          <label 
+            htmlFor={inputId}
+            style={{
+              display: "block",
+              fontSize: "11px",
+              fontWeight: "700",
+              color: "#374151",
+              marginBottom: "6px",
+              letterSpacing: "0.5px",
+              textTransform: "uppercase",
+              textAlign: "left",
+              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+            }}
+          >
             {label}
-          </span>
-          <span style={{ 
-            fontSize: "17px", 
-            fontWeight: "700", 
-            color: "#0D5653",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-          }}>
-            {value || 0}
-          </span>
+          </label>
+          <input
+            id={inputId}
+            type="text"
+            style={{
+              width: "100%",
+              height: "40px",
+              padding: "0 14px",
+              border: "2px solid #E8E8E8",
+              borderRadius: "6px",
+              fontSize: "14px",
+              fontWeight: "500",
+              color: "#1F2937",
+              outline: "none",
+              transition: "all 0.25s ease",
+              backgroundColor: isReadOnly ? "#F9FAFB" : "#FFFFFF",
+              cursor: isReadOnly ? "not-allowed" : "text",
+              textAlign: "left",
+              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+            }}
+            value={value || ""}
+            readOnly={isReadOnly}
+            onChange={function(e) {
+              if (section) {
+                handleChange(section, field, e.target.value);
+              } else {
+                handleNestedChange(field, e.target.value);
+              }
+            }}
+            onFocus={function(e) { 
+              if (!isReadOnly) {
+                e.target.style.borderColor = "#39B1AC";
+                e.target.style.backgroundColor = "#FFFFFF";
+                e.target.style.boxShadow = "0 0 0 3px rgba(57, 177, 172, 0.1)";
+              }
+            }}
+            onBlur={function(e) { 
+              e.target.style.borderColor = "#E8E8E8";
+              e.target.style.backgroundColor = isReadOnly ? "#F9FAFB" : "#FFFFFF";
+              e.target.style.boxShadow = "none";
+            }}
+          />
         </div>
-      </div>
-    );
-  };
+      );
+    };
 
-  // FormInput component with unique IDs to prevent focus loss
-  const FormInput = function({ label, value, section, field, readOnly }) {
-    const isReadOnly = readOnly || false;
-    const inputId = "input-" + section + "-" + field + "-" + Math.random();
-    
-    return (
-      <div>
-        <label 
-          htmlFor={inputId}
-          style={{
-            display: "block",
-            fontSize: "11px",
-            fontWeight: "700",
-            color: "#374151",
-            marginBottom: "6px",
-            letterSpacing: "0.5px",
-            textTransform: "uppercase",
-            textAlign: "left",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-          }}
-        >
-          {label}
-        </label>
+    // Table input component with unique IDs
+    const TableInput = function({ value, onChange, onFocus, onBlur, rowIndex, colName, tableName }) {
+      const inputId = "table-" + tableName + "-" + rowIndex + "-" + colName + "-" + Math.random();
+      
+      return (
         <input
           id={inputId}
           type="text"
           style={{
             width: "100%",
-            height: "40px",
-            padding: "0 14px",
+            height: "36px",
+            padding: "0 10px",
             border: "2px solid #E8E8E8",
-            borderRadius: "6px",
-            fontSize: "14px",
+            borderRadius: "5px",
+            fontSize: "13px",
             fontWeight: "500",
             color: "#1F2937",
             outline: "none",
             transition: "all 0.25s ease",
-            backgroundColor: isReadOnly ? "#F9FAFB" : "#FFFFFF",
-            cursor: isReadOnly ? "not-allowed" : "text",
+            backgroundColor: "#FFFFFF",
             textAlign: "left",
             fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
           }}
-          value={value || ""}
-          readOnly={isReadOnly}
-          onChange={function(e) {
-            if (section) {
-              handleChange(section, field, e.target.value);
-            } else {
-              handleNestedChange(field, e.target.value);
-            }
+          value={value}
+          onChange={onChange}
+          onFocus={function(e) {
+            e.target.style.borderColor = "#39B1AC";
+            e.target.style.backgroundColor = "#FFFFFF";
+            e.target.style.boxShadow = "0 0 0 3px rgba(57, 177, 172, 0.1)";
           }}
-          onFocus={function(e) { 
-            if (!isReadOnly) {
-              e.target.style.borderColor = "#39B1AC";
-              e.target.style.backgroundColor = "#FFFFFF";
-              e.target.style.boxShadow = "0 0 0 3px rgba(57, 177, 172, 0.1)";
-            }
-          }}
-          onBlur={function(e) { 
+          onBlur={function(e) {
             e.target.style.borderColor = "#E8E8E8";
-            e.target.style.backgroundColor = isReadOnly ? "#F9FAFB" : "#FFFFFF";
+            e.target.style.backgroundColor = "#FFFFFF";
             e.target.style.boxShadow = "none";
           }}
         />
-      </div>
-    );
-  };
+      );
+    };
 
-  // Table input component with unique IDs
-  const TableInput = function({ value, onChange, onFocus, onBlur, rowIndex, colName, tableName }) {
-    const inputId = "table-" + tableName + "-" + rowIndex + "-" + colName + "-" + Math.random();
-    
     return (
-      <input
-        id={inputId}
-        type="text"
-        style={{
-          width: "100%",
-          height: "36px",
-          padding: "0 10px",
-          border: "2px solid #E8E8E8",
-          borderRadius: "5px",
-          fontSize: "13px",
-          fontWeight: "500",
-          color: "#1F2937",
-          outline: "none",
-          transition: "all 0.25s ease",
+      <div style={{
+        backgroundColor: "#F7F9FB",
+        padding: "20px",
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        minHeight: "100vh"
+      }}>
+
+        {/* SHAREHOLDERS' FUNDS SECTION */}
+        <SectionHeader title="Shareholders' Funds" date={selectedMonthName} />
+        <div style={{
           backgroundColor: "#FFFFFF",
-          textAlign: "left",
-          fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-        }}
-        value={value}
-        onChange={onChange}
-        onFocus={function(e) {
-          e.target.style.borderColor = "#39B1AC";
-          e.target.style.backgroundColor = "#FFFFFF";
-          e.target.style.boxShadow = "0 0 0 3px rgba(57, 177, 172, 0.1)";
-        }}
-        onBlur={function(e) {
-          e.target.style.borderColor = "#E8E8E8";
-          e.target.style.backgroundColor = "#FFFFFF";
-          e.target.style.boxShadow = "none";
-        }}
-      />
+          padding: "20px",
+          borderRadius: "0 0 8px 8px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+          marginBottom: "6px",
+          border: "1px solid #F3F4F6",
+          borderTop: "none"
+        }}>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: "14px",
+            marginBottom: "12px"
+          }}>
+            <FormInput 
+              label="Share Capital (INR)" 
+              value={formData.ShareholdersFunds.ShareCapital}
+              section="ShareholdersFunds"
+              field="ShareCapital"
+              readOnly={true}
+            />
+            <FormInput 
+              label="Reserves and Surplus (INR)" 
+              value={formData.ShareholdersFunds.ReservesAndSurplus}
+              section="ShareholdersFunds"
+              field="ReservesAndSurplus"
+              readOnly={true}
+            />
+          </div>
+
+          <CalculatedField 
+            label="Share of Equity (INR)" 
+            value={formData.ShareholdersFunds.ShareOfEquity}
+          />
+
+          <CalculatedField 
+            label="Foreign (Total)" 
+            value={formData.ShareholdersFunds.Foreign.Total}
+          />
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: "14px",
+            marginBottom: "12px"
+          }}>
+            <FormInput 
+              label="Foreign Direct Investment (FDI)" 
+              value={formData.ShareholdersFunds.Foreign.FDI}
+              field="ShareholdersFunds.Foreign.FDI"
+            />
+            <FormInput 
+              label="Foreign Portfolio Investment (FPI)" 
+              value={formData.ShareholdersFunds.Foreign.FPI}
+              field="ShareholdersFunds.Foreign.FPI"
+            />
+            <FormInput 
+              label="Foreign Institutional Investment (FII)" 
+              value={formData.ShareholdersFunds.Foreign.FII}
+              field="ShareholdersFunds.Foreign.FII"
+            />
+            <FormInput 
+              label="Foreign Promoter" 
+              value={formData.ShareholdersFunds.Foreign.ForeignPromoter}
+              field="ShareholdersFunds.Foreign.ForeignPromoter"
+            />
+          </div>
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: "14px",
+            marginBottom: "12px"
+          }}>
+            <FormInput 
+              label="Others" 
+              value={formData.ShareholdersFunds.Foreign.Others}
+              field="ShareholdersFunds.Foreign.Others"
+            />
+          </div>
+
+          <CalculatedField 
+            label="Domestic (Total)" 
+            value={formData.ShareholdersFunds.Domestic.Total}
+          />
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: "14px",
+          }}>
+            <FormInput 
+              label="Domestic Promoter" 
+              value={formData.ShareholdersFunds.Domestic.DomesticPromoter}
+              field="ShareholdersFunds.Domestic.DomesticPromoter"
+            />
+            <FormInput 
+              label="Others" 
+              value={formData.ShareholdersFunds.Domestic.Others}
+              field="ShareholdersFunds.Domestic.Others"
+            />
+          </div>
+        </div>
+
+        {/* FRESH EQUITY RECEIVED SECTION */}
+        <SectionHeader title="Amount of Fresh Equity Received During the Quarter" date={selectedMonthName} />
+        <div style={{
+          backgroundColor: "#FFFFFF",
+          padding: "20px",
+          borderRadius: "0 0 8px 8px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+          marginBottom: "6px",
+          border: "1px solid #F3F4F6",
+          borderTop: "none"
+        }}>
+          <CalculatedField 
+            label="Total (INR)" 
+            value={formData.FreshEquityReceived.Total}
+          />
+
+          <CalculatedField 
+            label="Foreign (Total)" 
+            value={formData.FreshEquityReceived.Foreign.Total}
+          />
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: "14px",
+            marginBottom: "12px"
+          }}>
+            <FormInput 
+              label="Foreign Direct Investment (FDI)" 
+              value={formData.FreshEquityReceived.Foreign.FDI}
+              field="FreshEquityReceived.Foreign.FDI"
+            />
+            <FormInput 
+              label="Foreign Portfolio Investment (FPI)" 
+              value={formData.FreshEquityReceived.Foreign.FPI}
+              field="FreshEquityReceived.Foreign.FPI"
+            />
+            <FormInput 
+              label="Foreign Institutional Investment (FII)" 
+              value={formData.FreshEquityReceived.Foreign.FII}
+              field="FreshEquityReceived.Foreign.FII"
+            />
+            <FormInput 
+              label="Foreign Promoter" 
+              value={formData.FreshEquityReceived.Foreign.ForeignPromoter}
+              field="FreshEquityReceived.Foreign.ForeignPromoter"
+            />
+          </div>
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: "14px",
+            marginBottom: "12px"
+          }}>
+            <FormInput 
+              label="Others" 
+              value={formData.FreshEquityReceived.Foreign.Others}
+              field="FreshEquityReceived.Foreign.Others"
+            />
+          </div>
+
+          <CalculatedField 
+            label="Domestic (Total)" 
+            value={formData.FreshEquityReceived.Domestic.Total}
+          />
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: "14px",
+          }}>
+            <FormInput 
+              label="Domestic Promoter" 
+              value={formData.FreshEquityReceived.Domestic.DomesticPromoter}
+              field="FreshEquityReceived.Domestic.DomesticPromoter"
+            />
+            <FormInput 
+              label="Others" 
+              value={formData.FreshEquityReceived.Domestic.Others}
+              field="FreshEquityReceived.Domestic.Others"
+            />
+          </div>
+        </div>
+
+        {/* DETAILS OF EXISTING EQUITY */}
+        <SectionHeader title="Details of Existing Equity" date={selectedMonthName} />
+        <div style={{
+          backgroundColor: "#FFFFFF",
+          padding: "20px",
+          borderRadius: "0 0 8px 8px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+          marginBottom: "6px",
+          border: "1px solid #F3F4F6",
+          borderTop: "none"
+        }}>
+          <div style={{ marginBottom: "16px" }}>
+            <label style={{
+              fontSize: "11px",
+              fontWeight: "700",
+              color: "#374151",
+              marginRight: "10px",
+              letterSpacing: "0.5px",
+              textAlign: "left",
+              textTransform: "uppercase",
+              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+            }}>
+              Number of rows:
+            </label>
+            <select
+              style={{
+                padding: "8px 12px",
+                border: "2px solid #E8E8E8",
+                borderRadius: "6px",
+                fontSize: "13px",
+                fontWeight: "500",
+                color: "#1F2937",
+                outline: "none",
+                backgroundColor: "#FFFFFF",
+                cursor: "pointer",
+                transition: "all 0.25s ease",
+                fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+              }}
+              onChange={function(e) {
+                setDetailOfExistingNums(Number(e.target.value));
+                handleRowCountChange(e, "ExistingEquityProviders");
+              }}
+              value={detailOfExistingNums}
+            >
+              {[].concat(Array(150)).map(function(_, i) {
+                return (
+                  <option value={i + 1} key={i + 1}>
+                    {i + 1}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          <div style={{
+            border: "1px solid #E8E8E8",
+            borderRadius: "8px",
+            overflow: "hidden"
+          }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{
+                  background: "linear-gradient(135deg, #2B60AD 0%, #39B1AC 100%)",
+                }}>
+                  <th style={{
+                    padding: "12px 16px",
+                    textAlign: "left",
+                    color: "#FFFFFF",
+                    fontSize: "12px",
+                    fontWeight: "700",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.6px",
+                    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                  }}>Equity Provider</th>
+                  <th style={{
+                    padding: "12px 16px",
+                    textAlign: "left",
+                    color: "#FFFFFF",
+                    fontSize: "12px",
+                    fontWeight: "700",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.6px",
+                    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                  }}>Type</th>
+                  <th style={{
+                    padding: "12px 16px",
+                    textAlign: "left",
+                    color: "#FFFFFF",
+                    fontSize: "12px",
+                    fontWeight: "700",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.6px",
+                    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                  }}>Amount (INR)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formData.ExistingEquityProviders.length > 0 &&
+                  formData.ExistingEquityProviders.map(function(provider, index) {
+                    return (
+                      <tr key={index} style={{
+                        borderBottom: "1px solid #F3F4F6",
+                        backgroundColor: index % 2 === 0 ? "#FFFFFF" : "#FAFBFC"
+                      }}>
+                        <td style={{ padding: "10px 16px" }}>
+                          <TableInput
+                            value={provider.Name}
+                            onChange={function(e) {
+                              handleInputChange(
+                                index,
+                                "Name",
+                                e.target.value,
+                                "ExistingEquityProviders"
+                              );
+                            }}
+                            rowIndex={index}
+                            colName="Name"
+                            tableName="ExistingEquityProviders"
+                          />
+                        </td>
+                        <td style={{ padding: "10px 16px" }}>
+                          <TableInput
+                            value={provider.Type}
+                            onChange={function(e) {
+                              handleInputChange(
+                                index,
+                                "Type",
+                                e.target.value,
+                                "ExistingEquityProviders"
+                              );
+                            }}
+                            rowIndex={index}
+                            colName="Type"
+                            tableName="ExistingEquityProviders"
+                          />
+                        </td>
+                        <td style={{ padding: "10px 16px" }}>
+                          <TableInput
+                            value={provider.AmountReported}
+                            onChange={function(e) {
+                              handleInputChange(
+                                index,
+                                "AmountReported",
+                                e.target.value,
+                                "ExistingEquityProviders"
+                              );
+                            }}
+                            rowIndex={index}
+                            colName="AmountReported"
+                            tableName="ExistingEquityProviders"
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* DETAILS OF FRESH EQUITY RECEIVED */}
+        <SectionHeader title="Details of Fresh Equity Received During the Quarter" date={selectedMonthName} />
+        <div style={{
+          backgroundColor: "#FFFFFF",
+          padding: "20px",
+          borderRadius: "0 0 8px 8px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+          marginBottom: "6px",
+          border: "1px solid #F3F4F6",
+          borderTop: "none"
+        }}>
+          <div style={{ marginBottom: "16px" }}>
+            <label style={{
+              fontSize: "11px",
+              fontWeight: "700",
+              color: "#374151",
+              marginRight: "10px",
+              letterSpacing: "0.5px",
+              textAlign: "left",
+              textTransform: "uppercase",
+              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+            }}>
+              Number of rows:
+            </label>
+            <select
+              style={{
+                padding: "8px 12px",
+                border: "2px solid #E8E8E8",
+                borderRadius: "6px",
+                fontSize: "13px",
+                fontWeight: "500",
+                color: "#1F2937",
+                outline: "none",
+                backgroundColor: "#FFFFFF",
+                cursor: "pointer",
+                transition: "all 0.25s ease",
+                fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+              }}
+              onChange={function(e) {
+                setDetailOfFreshNums(Number(e.target.value));
+                handleRowCountChange(e, "equityreceivedExistingEquityProviders");
+              }}
+              value={detailOfFreshNums}
+            >
+              {[].concat(Array(150)).map(function(_, i) {
+                return (
+                  <option value={i + 1} key={i + 1}>
+                    {i + 1}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          <div style={{
+            border: "1px solid #E8E8E8",
+            borderRadius: "8px",
+            overflow: "hidden"
+          }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{
+                  background: "linear-gradient(135deg, #2B60AD 0%, #39B1AC 100%)",
+                }}>
+                  <th style={{
+                    padding: "12px 16px",
+                    textAlign: "left",
+                    color: "#FFFFFF",
+                    fontSize: "12px",
+                    fontWeight: "700",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.6px",
+                    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                  }}>Equity Provider</th>
+                  <th style={{
+                    padding: "12px 16px",
+                    textAlign: "left",
+                    color: "#FFFFFF",
+                    fontSize: "12px",
+                    fontWeight: "700",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.6px",
+                    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                  }}>Type</th>
+                  <th style={{
+                    padding: "12px 16px",
+                    textAlign: "left",
+                    color: "#FFFFFF",
+                    fontSize: "12px",
+                    fontWeight: "700",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.6px",
+                    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                  }}>Amount (INR)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formData.equityreceivedExistingEquityProviders.length &&
+                  formData.equityreceivedExistingEquityProviders.map(
+                    function(provider, index) {
+                      return (
+                        <tr key={index} style={{
+                          borderBottom: "1px solid #F3F4F6",
+                          backgroundColor: index % 2 === 0 ? "#FFFFFF" : "#FAFBFC"
+                        }}>
+                          <td style={{ padding: "10px 16px" }}>
+                            <TableInput
+                              value={provider.Name}
+                              onChange={function(e) {
+                                handleInputChange(
+                                  index,
+                                  "Name",
+                                  e.target.value,
+                                  "equityreceivedExistingEquityProviders"
+                                );
+                              }}
+                              rowIndex={index}
+                              colName="Name"
+                              tableName="equityreceivedExistingEquityProviders"
+                            />
+                          </td>
+                          <td style={{ padding: "10px 16px" }}>
+                            <TableInput
+                              value={provider.Type}
+                              onChange={function(e) {
+                                handleInputChange(
+                                  index,
+                                  "Type",
+                                  e.target.value,
+                                  "equityreceivedExistingEquityProviders"
+                                );
+                              }}
+                              rowIndex={index}
+                              colName="Type"
+                              tableName="equityreceivedExistingEquityProviders"
+                            />
+                          </td>
+                          <td style={{ padding: "10px 16px" }}>
+                            <TableInput
+                              value={provider.AmountReported}
+                              onChange={function(e) {
+                                handleInputChange(
+                                  index,
+                                  "AmountReported",
+                                  e.target.value,
+                                  "equityreceivedExistingEquityProviders"
+                                );
+                              }}
+                              rowIndex={index}
+                              colName="AmountReported"
+                              tableName="equityreceivedExistingEquityProviders"
+                            />
+                          </td>
+                        </tr>
+                      );
+                    }
+                  )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* DETAILS OF EQUITY BOUGHT BACK */}
+        <SectionHeader title="Details of Equity Bought Back/Redeemed During the Quarter" date={selectedMonthName} />
+        <div style={{
+          backgroundColor: "#FFFFFF",
+          padding: "20px",
+          borderRadius: "0 0 8px 8px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+          marginBottom: "6px",
+          border: "1px solid #F3F4F6",
+          borderTop: "none"
+        }}>
+          <div style={{ marginBottom: "16px" }}>
+            <label style={{
+              fontSize: "11px",
+              fontWeight: "700",
+              color: "#374151",
+              marginRight: "10px",
+              letterSpacing: "0.5px",
+              textAlign: "left",
+              textTransform: "uppercase",
+              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+            }}>
+              Number of rows:
+            </label>
+            <select
+              style={{
+                padding: "8px 12px",
+                border: "2px solid #E8E8E8",
+                borderRadius: "6px",
+                fontSize: "13px",
+                fontWeight: "500",
+                color: "#1F2937",
+                outline: "none",
+                backgroundColor: "#FFFFFF",
+                cursor: "pointer",
+                transition: "all 0.25s ease",
+                fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+              }}
+              onChange={function(e) {
+                setDetailOfEquityNums(Number(e.target.value));
+                handleRowCountChange(e, "equityboughtExistingEquityProviders");
+              }}
+              value={detailOfEquityNums}
+            >
+              {[].concat(Array(150)).map(function(_, i) {
+                return (
+                  <option value={i + 1} key={i + 1}>
+                    {i + 1}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          <div style={{
+            border: "1px solid #E8E8E8",
+            borderRadius: "8px",
+            overflow: "hidden"
+          }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{
+                  background: "linear-gradient(135deg, #2B60AD 0%, #39B1AC 100%)",
+                }}>
+                  <th style={{
+                    padding: "12px 16px",
+                    textAlign: "left",
+                    color: "#FFFFFF",
+                    fontSize: "12px",
+                    fontWeight: "700",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.6px",
+                    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                  }}>Equity Provider</th>
+                  <th style={{
+                    padding: "12px 16px",
+                    textAlign: "left",
+                    color: "#FFFFFF",
+                    fontSize: "12px",
+                    fontWeight: "700",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.6px",
+                    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                  }}>Type</th>
+                  <th style={{
+                    padding: "12px 16px",
+                    textAlign: "left",
+                    color: "#FFFFFF",
+                    fontSize: "12px",
+                    fontWeight: "700",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.6px",
+                    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                  }}>Amount (INR)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formData.equityboughtExistingEquityProviders.length &&
+                  formData.equityboughtExistingEquityProviders.map(
+                    function(provider, index) {
+                      return (
+                        <tr key={index} style={{
+                          borderBottom: "1px solid #F3F4F6",
+                          backgroundColor: index % 2 === 0 ? "#FFFFFF" : "#FAFBFC"
+                        }}>
+                          <td style={{ padding: "10px 16px" }}>
+                            <TableInput
+                              value={provider.Name}
+                              onChange={function(e) {
+                                handleInputChange(
+                                  index,
+                                  "Name",
+                                  e.target.value,
+                                  "equityboughtExistingEquityProviders"
+                                );
+                              }}
+                              rowIndex={index}
+                              colName="Name"
+                              tableName="equityboughtExistingEquityProviders"
+                            />
+                          </td>
+                          <td style={{ padding: "10px 16px" }}>
+                            <TableInput
+                              value={provider.Type}
+                              onChange={function(e) {
+                                handleInputChange(
+                                  index,
+                                  "Type",
+                                  e.target.value,
+                                  "equityboughtExistingEquityProviders"
+                                );
+                              }}
+                              rowIndex={index}
+                              colName="Type"
+                              tableName="equityboughtExistingEquityProviders"
+                            />
+                          </td>
+                          <td style={{ padding: "10px 16px" }}>
+                            <TableInput
+                              value={provider.AmountReported}
+                              onChange={function(e) {
+                                handleInputChange(
+                                  index,
+                                  "AmountReported",
+                                  e.target.value,
+                                  "equityboughtExistingEquityProviders"
+                                );
+                              }}
+                              rowIndex={index}
+                              colName="AmountReported"
+                              tableName="equityboughtExistingEquityProviders"
+                            />
+                          </td>
+                        </tr>
+                      );
+                    }
+                  )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
     );
-  };
+  }
 
-  return (
-    <div style={{
-      backgroundColor: "#F7F9FB",
-      padding: "20px",
-      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      minHeight: "100vh"
-    }}>
-
-      {/* SHAREHOLDERS' FUNDS SECTION */}
-      <SectionHeader title="Shareholders' Funds" date={selectedMonthName} />
-      <div style={{
-        backgroundColor: "#FFFFFF",
-        padding: "20px",
-        borderRadius: "0 0 8px 8px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-        marginBottom: "6px",
-        border: "1px solid #F3F4F6",
-        borderTop: "none"
-      }}>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "14px",
-          marginBottom: "12px"
-        }}>
-          <FormInput 
-            label="Share Capital (INR)" 
-            value={formData.ShareholdersFunds.ShareCapital}
-            section="ShareholdersFunds"
-            field="ShareCapital"
-            readOnly={true}
-          />
-          <FormInput 
-            label="Reserves and Surplus (INR)" 
-            value={formData.ShareholdersFunds.ReservesAndSurplus}
-            section="ShareholdersFunds"
-            field="ReservesAndSurplus"
-            readOnly={true}
-          />
-        </div>
-
-        <CalculatedField 
-          label="Share of Equity (INR)" 
-          value={formData.ShareholdersFunds.ShareOfEquity}
-        />
-
-        <CalculatedField 
-          label="Foreign (Total)" 
-          value={formData.ShareholdersFunds.Foreign.Total}
-        />
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "14px",
-          marginBottom: "12px"
-        }}>
-          <FormInput 
-            label="Foreign Direct Investment (FDI)" 
-            value={formData.ShareholdersFunds.Foreign.FDI}
-            field="ShareholdersFunds.Foreign.FDI"
-          />
-          <FormInput 
-            label="Foreign Portfolio Investment (FPI)" 
-            value={formData.ShareholdersFunds.Foreign.FPI}
-            field="ShareholdersFunds.Foreign.FPI"
-          />
-          <FormInput 
-            label="Foreign Institutional Investment (FII)" 
-            value={formData.ShareholdersFunds.Foreign.FII}
-            field="ShareholdersFunds.Foreign.FII"
-          />
-          <FormInput 
-            label="Foreign Promoter" 
-            value={formData.ShareholdersFunds.Foreign.ForeignPromoter}
-            field="ShareholdersFunds.Foreign.ForeignPromoter"
-          />
-        </div>
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "14px",
-          marginBottom: "12px"
-        }}>
-          <FormInput 
-            label="Others" 
-            value={formData.ShareholdersFunds.Foreign.Others}
-            field="ShareholdersFunds.Foreign.Others"
-          />
-        </div>
-
-        <CalculatedField 
-          label="Domestic (Total)" 
-          value={formData.ShareholdersFunds.Domestic.Total}
-        />
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "14px",
-        }}>
-          <FormInput 
-            label="Domestic Promoter" 
-            value={formData.ShareholdersFunds.Domestic.DomesticPromoter}
-            field="ShareholdersFunds.Domestic.DomesticPromoter"
-          />
-          <FormInput 
-            label="Others" 
-            value={formData.ShareholdersFunds.Domestic.Others}
-            field="ShareholdersFunds.Domestic.Others"
-          />
-        </div>
-      </div>
-
-      {/* FRESH EQUITY RECEIVED SECTION */}
-      <SectionHeader title="Amount of Fresh Equity Received During the Quarter" date={selectedMonthName} />
-      <div style={{
-        backgroundColor: "#FFFFFF",
-        padding: "20px",
-        borderRadius: "0 0 8px 8px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-        marginBottom: "6px",
-        border: "1px solid #F3F4F6",
-        borderTop: "none"
-      }}>
-        <CalculatedField 
-          label="Total (INR)" 
-          value={formData.FreshEquityReceived.Total}
-        />
-
-        <CalculatedField 
-          label="Foreign (Total)" 
-          value={formData.FreshEquityReceived.Foreign.Total}
-        />
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "14px",
-          marginBottom: "12px"
-        }}>
-          <FormInput 
-            label="Foreign Direct Investment (FDI)" 
-            value={formData.FreshEquityReceived.Foreign.FDI}
-            field="FreshEquityReceived.Foreign.FDI"
-          />
-          <FormInput 
-            label="Foreign Portfolio Investment (FPI)" 
-            value={formData.FreshEquityReceived.Foreign.FPI}
-            field="FreshEquityReceived.Foreign.FPI"
-          />
-          <FormInput 
-            label="Foreign Institutional Investment (FII)" 
-            value={formData.FreshEquityReceived.Foreign.FII}
-            field="FreshEquityReceived.Foreign.FII"
-          />
-          <FormInput 
-            label="Foreign Promoter" 
-            value={formData.FreshEquityReceived.Foreign.ForeignPromoter}
-            field="FreshEquityReceived.Foreign.ForeignPromoter"
-          />
-        </div>
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "14px",
-          marginBottom: "12px"
-        }}>
-          <FormInput 
-            label="Others" 
-            value={formData.FreshEquityReceived.Foreign.Others}
-            field="FreshEquityReceived.Foreign.Others"
-          />
-        </div>
-
-        <CalculatedField 
-          label="Domestic (Total)" 
-          value={formData.FreshEquityReceived.Domestic.Total}
-        />
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "14px",
-        }}>
-          <FormInput 
-            label="Domestic Promoter" 
-            value={formData.FreshEquityReceived.Domestic.DomesticPromoter}
-            field="FreshEquityReceived.Domestic.DomesticPromoter"
-          />
-          <FormInput 
-            label="Others" 
-            value={formData.FreshEquityReceived.Domestic.Others}
-            field="FreshEquityReceived.Domestic.Others"
-          />
-        </div>
-      </div>
-
-      {/* DETAILS OF EXISTING EQUITY */}
-      <SectionHeader title="Details of Existing Equity" date={selectedMonthName} />
-      <div style={{
-        backgroundColor: "#FFFFFF",
-        padding: "20px",
-        borderRadius: "0 0 8px 8px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-        marginBottom: "6px",
-        border: "1px solid #F3F4F6",
-        borderTop: "none"
-      }}>
-        <div style={{ marginBottom: "16px" }}>
-          <label style={{
-            fontSize: "11px",
-            fontWeight: "700",
-            color: "#374151",
-            marginRight: "10px",
-            letterSpacing: "0.5px",
-            textAlign: "left",
-            textTransform: "uppercase",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-          }}>
-            Number of rows:
-          </label>
-          <select
-            style={{
-              padding: "8px 12px",
-              border: "2px solid #E8E8E8",
-              borderRadius: "6px",
-              fontSize: "13px",
-              fontWeight: "500",
-              color: "#1F2937",
-              outline: "none",
-              backgroundColor: "#FFFFFF",
-              cursor: "pointer",
-              transition: "all 0.25s ease",
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-            }}
-            onChange={function(e) {
-              setDetailOfExistingNums(Number(e.target.value));
-              handleRowCountChange(e, "ExistingEquityProviders");
-            }}
-            value={detailOfExistingNums}
-          >
-            {[].concat(Array(150)).map(function(_, i) {
-              return (
-                <option value={i + 1} key={i + 1}>
-                  {i + 1}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-
-        <div style={{
-          border: "1px solid #E8E8E8",
-          borderRadius: "8px",
-          overflow: "hidden"
-        }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{
-                background: "linear-gradient(135deg, #2B60AD 0%, #39B1AC 100%)",
-              }}>
-                <th style={{
-                  padding: "12px 16px",
-                  textAlign: "left",
-                  color: "#FFFFFF",
-                  fontSize: "12px",
-                  fontWeight: "700",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.6px",
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-                }}>Equity Provider</th>
-                <th style={{
-                  padding: "12px 16px",
-                  textAlign: "left",
-                  color: "#FFFFFF",
-                  fontSize: "12px",
-                  fontWeight: "700",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.6px",
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-                }}>Type</th>
-                <th style={{
-                  padding: "12px 16px",
-                  textAlign: "left",
-                  color: "#FFFFFF",
-                  fontSize: "12px",
-                  fontWeight: "700",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.6px",
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-                }}>Amount (INR)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {formData.ExistingEquityProviders.length > 0 &&
-                formData.ExistingEquityProviders.map(function(provider, index) {
-                  return (
-                    <tr key={index} style={{
-                      borderBottom: "1px solid #F3F4F6",
-                      backgroundColor: index % 2 === 0 ? "#FFFFFF" : "#FAFBFC"
-                    }}>
-                      <td style={{ padding: "10px 16px" }}>
-                        <TableInput
-                          value={provider.Name}
-                          onChange={function(e) {
-                            handleInputChange(
-                              index,
-                              "Name",
-                              e.target.value,
-                              "ExistingEquityProviders"
-                            );
-                          }}
-                          rowIndex={index}
-                          colName="Name"
-                          tableName="ExistingEquityProviders"
-                        />
-                      </td>
-                      <td style={{ padding: "10px 16px" }}>
-                        <TableInput
-                          value={provider.Type}
-                          onChange={function(e) {
-                            handleInputChange(
-                              index,
-                              "Type",
-                              e.target.value,
-                              "ExistingEquityProviders"
-                            );
-                          }}
-                          rowIndex={index}
-                          colName="Type"
-                          tableName="ExistingEquityProviders"
-                        />
-                      </td>
-                      <td style={{ padding: "10px 16px" }}>
-                        <TableInput
-                          value={provider.AmountReported}
-                          onChange={function(e) {
-                            handleInputChange(
-                              index,
-                              "AmountReported",
-                              e.target.value,
-                              "ExistingEquityProviders"
-                            );
-                          }}
-                          rowIndex={index}
-                          colName="AmountReported"
-                          tableName="ExistingEquityProviders"
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* DETAILS OF FRESH EQUITY RECEIVED */}
-      <SectionHeader title="Details of Fresh Equity Received During the Quarter" date={selectedMonthName} />
-      <div style={{
-        backgroundColor: "#FFFFFF",
-        padding: "20px",
-        borderRadius: "0 0 8px 8px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-        marginBottom: "6px",
-        border: "1px solid #F3F4F6",
-        borderTop: "none"
-      }}>
-        <div style={{ marginBottom: "16px" }}>
-          <label style={{
-            fontSize: "11px",
-            fontWeight: "700",
-            color: "#374151",
-            marginRight: "10px",
-            letterSpacing: "0.5px",
-            textAlign: "left",
-            textTransform: "uppercase",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-          }}>
-            Number of rows:
-          </label>
-          <select
-            style={{
-              padding: "8px 12px",
-              border: "2px solid #E8E8E8",
-              borderRadius: "6px",
-              fontSize: "13px",
-              fontWeight: "500",
-              color: "#1F2937",
-              outline: "none",
-              backgroundColor: "#FFFFFF",
-              cursor: "pointer",
-              transition: "all 0.25s ease",
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-            }}
-            onChange={function(e) {
-              setDetailOfFreshNums(Number(e.target.value));
-              handleRowCountChange(e, "equityreceivedExistingEquityProviders");
-            }}
-            value={detailOfFreshNums}
-          >
-            {[].concat(Array(150)).map(function(_, i) {
-              return (
-                <option value={i + 1} key={i + 1}>
-                  {i + 1}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-
-        <div style={{
-          border: "1px solid #E8E8E8",
-          borderRadius: "8px",
-          overflow: "hidden"
-        }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{
-                background: "linear-gradient(135deg, #2B60AD 0%, #39B1AC 100%)",
-              }}>
-                <th style={{
-                  padding: "12px 16px",
-                  textAlign: "left",
-                  color: "#FFFFFF",
-                  fontSize: "12px",
-                  fontWeight: "700",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.6px",
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-                }}>Equity Provider</th>
-                <th style={{
-                  padding: "12px 16px",
-                  textAlign: "left",
-                  color: "#FFFFFF",
-                  fontSize: "12px",
-                  fontWeight: "700",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.6px",
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-                }}>Type</th>
-                <th style={{
-                  padding: "12px 16px",
-                  textAlign: "left",
-                  color: "#FFFFFF",
-                  fontSize: "12px",
-                  fontWeight: "700",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.6px",
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-                }}>Amount (INR)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {formData.equityreceivedExistingEquityProviders.length &&
-                formData.equityreceivedExistingEquityProviders.map(
-                  function(provider, index) {
-                    return (
-                      <tr key={index} style={{
-                        borderBottom: "1px solid #F3F4F6",
-                        backgroundColor: index % 2 === 0 ? "#FFFFFF" : "#FAFBFC"
-                      }}>
-                        <td style={{ padding: "10px 16px" }}>
-                          <TableInput
-                            value={provider.Name}
-                            onChange={function(e) {
-                              handleInputChange(
-                                index,
-                                "Name",
-                                e.target.value,
-                                "equityreceivedExistingEquityProviders"
-                              );
-                            }}
-                            rowIndex={index}
-                            colName="Name"
-                            tableName="equityreceivedExistingEquityProviders"
-                          />
-                        </td>
-                        <td style={{ padding: "10px 16px" }}>
-                          <TableInput
-                            value={provider.Type}
-                            onChange={function(e) {
-                              handleInputChange(
-                                index,
-                                "Type",
-                                e.target.value,
-                                "equityreceivedExistingEquityProviders"
-                              );
-                            }}
-                            rowIndex={index}
-                            colName="Type"
-                            tableName="equityreceivedExistingEquityProviders"
-                          />
-                        </td>
-                        <td style={{ padding: "10px 16px" }}>
-                          <TableInput
-                            value={provider.AmountReported}
-                            onChange={function(e) {
-                              handleInputChange(
-                                index,
-                                "AmountReported",
-                                e.target.value,
-                                "equityreceivedExistingEquityProviders"
-                              );
-                            }}
-                            rowIndex={index}
-                            colName="AmountReported"
-                            tableName="equityreceivedExistingEquityProviders"
-                          />
-                        </td>
-                      </tr>
-                    );
-                  }
-                )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* DETAILS OF EQUITY BOUGHT BACK */}
-      <SectionHeader title="Details of Equity Bought Back/Redeemed During the Quarter" date={selectedMonthName} />
-      <div style={{
-        backgroundColor: "#FFFFFF",
-        padding: "20px",
-        borderRadius: "0 0 8px 8px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-        marginBottom: "6px",
-        border: "1px solid #F3F4F6",
-        borderTop: "none"
-      }}>
-        <div style={{ marginBottom: "16px" }}>
-          <label style={{
-            fontSize: "11px",
-            fontWeight: "700",
-            color: "#374151",
-            marginRight: "10px",
-            letterSpacing: "0.5px",
-            textAlign: "left",
-            textTransform: "uppercase",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-          }}>
-            Number of rows:
-          </label>
-          <select
-            style={{
-              padding: "8px 12px",
-              border: "2px solid #E8E8E8",
-              borderRadius: "6px",
-              fontSize: "13px",
-              fontWeight: "500",
-              color: "#1F2937",
-              outline: "none",
-              backgroundColor: "#FFFFFF",
-              cursor: "pointer",
-              transition: "all 0.25s ease",
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-            }}
-            onChange={function(e) {
-              setDetailOfEquityNums(Number(e.target.value));
-              handleRowCountChange(e, "equityboughtExistingEquityProviders");
-            }}
-            value={detailOfEquityNums}
-          >
-            {[].concat(Array(150)).map(function(_, i) {
-              return (
-                <option value={i + 1} key={i + 1}>
-                  {i + 1}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-
-        <div style={{
-          border: "1px solid #E8E8E8",
-          borderRadius: "8px",
-          overflow: "hidden"
-        }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{
-                background: "linear-gradient(135deg, #2B60AD 0%, #39B1AC 100%)",
-              }}>
-                <th style={{
-                  padding: "12px 16px",
-                  textAlign: "left",
-                  color: "#FFFFFF",
-                  fontSize: "12px",
-                  fontWeight: "700",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.6px",
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-                }}>Equity Provider</th>
-                <th style={{
-                  padding: "12px 16px",
-                  textAlign: "left",
-                  color: "#FFFFFF",
-                  fontSize: "12px",
-                  fontWeight: "700",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.6px",
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-                }}>Type</th>
-                <th style={{
-                  padding: "12px 16px",
-                  textAlign: "left",
-                  color: "#FFFFFF",
-                  fontSize: "12px",
-                  fontWeight: "700",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.6px",
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-                }}>Amount (INR)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {formData.equityboughtExistingEquityProviders.length &&
-                formData.equityboughtExistingEquityProviders.map(
-                  function(provider, index) {
-                    return (
-                      <tr key={index} style={{
-                        borderBottom: "1px solid #F3F4F6",
-                        backgroundColor: index % 2 === 0 ? "#FFFFFF" : "#FAFBFC"
-                      }}>
-                        <td style={{ padding: "10px 16px" }}>
-                          <TableInput
-                            value={provider.Name}
-                            onChange={function(e) {
-                              handleInputChange(
-                                index,
-                                "Name",
-                                e.target.value,
-                                "equityboughtExistingEquityProviders"
-                              );
-                            }}
-                            rowIndex={index}
-                            colName="Name"
-                            tableName="equityboughtExistingEquityProviders"
-                          />
-                        </td>
-                        <td style={{ padding: "10px 16px" }}>
-                          <TableInput
-                            value={provider.Type}
-                            onChange={function(e) {
-                              handleInputChange(
-                                index,
-                                "Type",
-                                e.target.value,
-                                "equityboughtExistingEquityProviders"
-                              );
-                            }}
-                            rowIndex={index}
-                            colName="Type"
-                            tableName="equityboughtExistingEquityProviders"
-                          />
-                        </td>
-                        <td style={{ padding: "10px 16px" }}>
-                          <TableInput
-                            value={provider.AmountReported}
-                            onChange={function(e) {
-                              handleInputChange(
-                                index,
-                                "AmountReported",
-                                e.target.value,
-                                "equityboughtExistingEquityProviders"
-                              );
-                            }}
-                            rowIndex={index}
-                            colName="AmountReported"
-                            tableName="equityboughtExistingEquityProviders"
-                          />
-                        </td>
-                      </tr>
-                    );
-                  }
-                )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-    </div>
-  );
-}
-
-export default Equity;
+  export default Equity;

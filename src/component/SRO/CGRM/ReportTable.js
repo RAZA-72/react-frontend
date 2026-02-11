@@ -93,7 +93,7 @@ function ReportTable({ table1cgrm }) {
     }
   }, [table1cgrm]);
 
-  const [open, setOpen] = React.useState(false);
+  const [open] = React.useState(false);
 
   // PDF Export
   const downloadPdf = () => {
